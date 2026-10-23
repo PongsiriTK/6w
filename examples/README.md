@@ -1,6 +1,6 @@
 # MenuLens demo
 
-Rendered blueprint of the complete state: https://pongsiritk.github.io/6w/demo/menulens/ (source file `../docs/demo/menulens/index.html`).
+Rendered blueprint of the complete state: https://pongsiritk.github.io/6w/demo/menulens/ (source file `../docs/demo/menulens/index.html`). The Markdown handoff from the same export starts at [START-HERE.md](../docs/demo/menulens/handoff/START-HERE.md).
 
 A worked 6W session on one idea, kept as two state files so the scripts have something real to score and validate. The idea: photograph a restaurant menu abroad and learn what each dish is and whether it is safe to order.
 
@@ -81,11 +81,11 @@ The refined state still carries evidence labeled "assumption" on value capture, 
 node skills/6w/scripts/score.mjs examples/menulens-partial/state.json
 node skills/6w/scripts/score.mjs examples/menulens-complete/state.json
 node skills/6w/scripts/validate.mjs examples/menulens-complete/state.json
-node skills/6w/scripts/render.mjs examples/menulens-complete/state.json /tmp/6w-blueprint.html
+node skills/6w/scripts/export.mjs examples/menulens-complete/state.json /tmp/menulens-demo
 ```
 
 `validate.mjs` on the complete state takes 0.03 seconds wall clock on an Apple Silicon laptop (one run, Node 24). Change any rating in a state file and run `score.mjs --write` to see the arithmetic move. Add a link to an ID that does not exist and `validate.mjs` names the path.
 
 ## What this demo does not show
 
-The Markdown handoff was not exported, because that renderer does not exist yet. The HTML page has no architecture diagrams, because the diagram adapter and its fallback are a later phase; the page says so in its Technical section. No real user took part. The accuracy, latency and cost figures are the hypotheses a real session would record, not measurements.
+The diagrams on the page are the built-in fallback, because archify was not run for this demo. No ERD is drawn, because the state records no data entities, and the page says so. No real user took part. No real user took part. The accuracy, latency and cost figures are the hypotheses a real session would record, not measurements.

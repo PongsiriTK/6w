@@ -54,6 +54,11 @@
             "prototype",
             "product"
           ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Incremented by state.mjs on every save. Used to detect a concurrent write."
         }
       }
     },

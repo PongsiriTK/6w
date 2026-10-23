@@ -4,6 +4,9 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderHtml, stateHash, esc } from "./render.mjs";
+import { buildBundle, HTML_NAME } from "./export.mjs";
+import { loadDiagrams } from "./diagrams.mjs";
+import { DEMO_GENERATED_AT } from "../../../scripts/build-demo.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "../../..");
@@ -23,8 +26,10 @@ test("escapes every string from state, including script-like source content", ()
 });
 
 test("has no external reference: no http(s) src, no link rel=stylesheet, no @import, no external font", () => {
-	const html = renderHtml(load("menulens-complete"), { generatedAt: "2026-01-01T00:00:00Z" });
-	assert.doesNotMatch(html, /<(?:script|img|link|iframe)[^>]+(?:src|href)="https?:/i);
+	const st = load("menulens-complete");
+	const html = renderHtml(st, { generatedAt: "2026-01-01T00:00:00Z", diagrams: loadDiagrams(st) });
+	assert.match(html, /<figure class="diagram" id="diagram-workflow">/);
+	assert.doesNotMatch(html, /<(?:script|img|link|iframe|image|use)[^>]+(?:src|href)="https?:/i);
 	assert.doesNotMatch(html, /@import|url\(https?:/i);
 	assert.doesNotMatch(html, /fonts\.googleapis|cdn\./i);
 });
@@ -61,13 +66,16 @@ test("rendering is deterministic for a fixed generatedAt", () => {
 	assert.equal(renderHtml(s, { generatedAt: "2026-01-01T00:00:00Z" }), renderHtml(load("menulens-complete"), { generatedAt: "2026-01-01T00:00:00Z" }));
 });
 
-test("the committed demo page is the current render of the complete example", () => {
-	const demo = join(root, "docs/demo/menulens/index.html");
-	assert.ok(existsSync(demo), "docs/demo/menulens/index.html missing; run: node skills/6w/scripts/render.mjs examples/menulens-complete/state.json docs/demo/menulens/index.html");
-	const committed = readFileSync(demo, "utf8");
-	const at = committed.match(/<meta name="6w-generated-at" content="([^"]+)">/)?.[1];
-	assert.ok(at, "demo has no generated-at meta");
-	assert.equal(renderHtml(load("menulens-complete"), { generatedAt: at }), committed, "demo is stale; re-run render.mjs with --generated-at " + at);
+test("the committed demo page and handoff are the current export of the complete example", () => {
+	const demo = join(root, "docs/demo/menulens");
+	assert.ok(existsSync(join(demo, "index.html")), "docs/demo/menulens/index.html missing; run: node scripts/build-demo.mjs");
+	const { files } = buildBundle(load("menulens-complete"), { generatedAt: DEMO_GENERATED_AT });
+	assert.equal(readFileSync(join(demo, "index.html"), "utf8"), files.get(HTML_NAME), "demo page is stale; run: node scripts/build-demo.mjs");
+	for (const [path, content] of files) {
+		if (path === HTML_NAME) continue;
+		const name = path.split("/").pop();
+		assert.equal(readFileSync(join(demo, "handoff", name), "utf8"), content, `demo handoff ${name} is stale; run: node scripts/build-demo.mjs`);
+	}
 });
 
 test("esc covers the five HTML special characters", () => {

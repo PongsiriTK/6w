@@ -4,7 +4,15 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-10-23
+
 ### Added
+
+- `state.mjs`: validated atomic save with a revision check, checkpoints under `.6w/checkpoints/`, migration of unknown fields into `extensions`.
+- `diagrams.mjs`: diagram specs derived from state, archify detection and ingestion with an SVG sanitizer that refuses scripts and external references, and a monoline inline-SVG fallback for workflow, architecture and sequence.
+- `handoff.mjs` and `export.mjs`: the ten Markdown handoff files and `export-manifest.json`, exported with the HTML as one checked bundle. A failed export leaves the previous bundle intact.
+- `scripts/build-demo.mjs` rebuilds the published demo, now including its handoff. A test fails when the demo is stale.
+- First compatibility row: Claude Code 2.1.282, scripts and export verified, install and activation untested.
 
 - `skills/6w/scripts/render.mjs` and `templates/blueprint.css`: the first HTML blueprint renderer. One offline file, inline CSS and SVG, escaped content, deterministic for a fixed timestamp.
 - Live demo of the complete MenuLens state at https://pongsiritk.github.io/6w/demo/menulens/ (GitHub Pages from `docs/`). A test fails when the page drifts from the state.

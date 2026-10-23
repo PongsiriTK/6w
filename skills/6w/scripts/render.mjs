@@ -62,7 +62,7 @@ function table(rows, cols) {
 	return `<table><thead><tr>${cols.map(([h]) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${cols.map(([, f]) => `<td>${f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 }
 
-export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.0.2" } = {}) {
+export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.0.3", diagrams = {} } = {}) {
 	const computed = computeScores(state);
 	const R = state.records ?? {};
 	const hash = stateHash(state);
@@ -159,7 +159,14 @@ ${R.assumptions?.length ? `<h3>Assumptions</h3>${table(R.assumptions, [["ID", (a
 <section id="technical"><h2>Technical direction</h2>
 <p class="lead">${esc(state.ws.which.summary)}</p>
 <div class="grid"><div class="card"><h3>Form factor</h3><p>${esc(whichForm?.rationale ?? "")}</p></div><div class="card"><h3>Integration boundary</h3><p>${esc(whichIntegration?.rationale ?? "")}</p></div></div>
-<p class="status-note">Architecture, sequence and schema diagrams: not generated. The diagram adapter and its fallback are a later phase. Decisions above are proposed designs until implemented.</p>
+<h3>Diagrams</h3>
+<p class="meta">Diagrams are derived from the records above and introduce no new decision. Each says whether archify or the built-in fallback drew it. Designs are proposed until implemented.</p>
+${["workflow", "architecture", "sequence", "erd"].map((t) => {
+	const d = diagrams[t];
+	if (!d) return `<p class="status-note">${esc(t)}: not generated.</p>`;
+	if (!d.svg) return `<p class="status-note">${esc(t)}: ${esc(d.description)}</p>`;
+	return `<figure class="diagram" id="diagram-${t}"><figcaption><b>${esc(t)}</b> <span class="tag">${esc(d.source)}</span></figcaption>${d.svg}<details><summary>Text description</summary><p>${esc(d.description)}</p>${d.rejected ? `<p class="meta">An archify output was rejected: ${esc(d.rejected)}</p>` : ""}</details></figure>`;
+}).join("")}
 </section>
 
 <section id="decisions"><h2>Decisions</h2>

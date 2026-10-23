@@ -1,6 +1,6 @@
 # 6W master blueprint
 
-Version 0.0.2. 23 October 2026. Status: specification, skill, scoring and validation scripts, state schema and a worked demo. The renderer, export and host adapters are not built yet. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
+Version 0.0.3. 23 October 2026. Status: specification, skill, state schema, and scripts for scoring, validation, state, diagrams and the full export, with a worked demo published from them. Marketplace install and activation are untested on every host. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
 
 Tagline: give your idea a foundation before you build.
 
@@ -516,12 +516,14 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 ├── package.json                 # `npm test` runs the gate; no dependencies
 ├── assets/logo/                 # 6w-mark.svg, 6w-mark-dark.svg, PNG, icon (archify lockups)
 ├── docs/
-│   ├── demo/menulens/           # rendered MenuLens blueprint, served by GitHub Pages
+│   ├── demo/menulens/           # exported MenuLens blueprint and handoff, served by GitHub Pages
 │   ├── compatibility.md         # tested-host matrix
 │   ├── porting-to-a-new-host.md # how to add a host              (superpowers)
 │   ├── plans/                   # implementation plans, one file each
 │   └── sources/                 # the two merged source documents
-├── scripts/check-repo.mjs       # the repository gate
+├── scripts/
+│   ├── check-repo.mjs           # the repository gate
+│   └── build-demo.mjs           # rebuilds docs/demo from the complete example
 ├── skills/6w/
 │   ├── SKILL.md                 # the portable skill, under 500 lines
 │   ├── references/
@@ -531,18 +533,18 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   │   ├── interview-examples.md      (planned)
 │   │   └── archify-bridge.md          (planned)
 │   ├── schemas/                 state.schema.json, export-manifest.schema.json
-│   ├── templates/
-│   │   ├── blueprint.css        inlined into every rendered page
-│   │   └── handoff/             (planned) Markdown templates
+│   ├── templates/blueprint.css  inlined into every rendered page
 │   └── scripts/
 │       ├── rubric.mjs           weights, criteria and caps
 │       ├── scoring.mjs          pure scoring functions, scoreboard text
 │       ├── score.mjs            CLI: scores, --write
 │       ├── validate.mjs         schema, rubric, links, score consistency
-│       ├── render.mjs           CLI: 6w-blueprint.html from one validated state
-│       ├── *.test.mjs           node --test suites next to the code (pstack)
-│       ├── state.mjs            (planned)
-│       └── export.mjs           (planned) Markdown handoff, manifest, atomic bundle
+│       ├── state.mjs            load, atomic save with revision check, checkpoint, migrate
+│       ├── diagrams.mjs         specs, archify detection and ingestion, sanitizer, SVG fallback
+│       ├── render.mjs           6w-blueprint.html from one validated state
+│       ├── handoff.mjs          the ten Markdown handoff files
+│       ├── export.mjs           CLI: the whole bundle plus export-manifest.json, atomic
+│       └── *.test.mjs           node --test suites next to the code (pstack)
 ├── examples/                    menulens-partial, menulens-complete, README.md
 └── tests/                       (planned) host checks and fixtures
 ```

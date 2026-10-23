@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "0.1",
+  "projectId": "menulens",
+  "blueprintVersion": "0.0.3",
+  "rubricVersion": "0.1",
+  "stateHash": "sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac",
+  "generatedAt": "2026-10-23T16:00:00+07:00",
+  "files": [
+    {
+      "path": "6w-blueprint.html",
+      "sha256": "5316347e95c01e49c8b1e3b6bcc3ede2e5b8542cb16ae3058e0c8eead58c742b",
+      "kind": "html"
+    },
+    {
+      "path": ".6w/handoff/START-HERE.md",
+      "sha256": "94935f0af0d20cadc24d42cff03336663f931ae8ce3aa06c14784758e112b988",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/PRODUCT.md",
+      "sha256": "6bf807949b37d1760de739d885d7fdac5f06890a271dcb0ee781fd80cf8be1c6",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/AUDIENCE.md",
+      "sha256": "c18f0bbd71987bc51a4e8edde2b2ab83a43317f6726db91228cc3bef624dd6fe",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/MARKETING.md",
+      "sha256": "47bc53a243da9498796b38729ffcba5a79b9967c48d89742229131b85d562736",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/REQUIREMENTS.md",
+      "sha256": "1cfe99917cf7d91c90167d0424150f483f38e97403b45ab844f0d4492d874d9b",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/ARCHITECTURE.md",
+      "sha256": "700bae27dd1d22f001091fd5a9f5ef24c463551f85d9f71007455a209894652c",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/DELIVERY.md",
+      "sha256": "f2ce35f98a2fa2db713d3e0b7f9b8682ad6d0e171a3ef5e3a72ee1588f234217",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/RISKS-AND-ASSUMPTIONS.md",
+      "sha256": "4f98a61a067587b697c6fb8c1f6fe5a2b8db7b948d27c0f8f057d4f86e643b7a",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/DECISIONS.md",
+      "sha256": "991df087046fad63e362c05b2bec9285393a2953b0d43475c4b0390b8cf53464",
+      "kind": "markdown"
+    },
+    {
+      "path": ".6w/handoff/AGENT-RULES.md",
+      "sha256": "00d6348490275542db3254ce8d15fc0aa540d0145060de2779f64dd2991415b3",
+      "kind": "markdown"
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "problems": [],
+    "diagrams": {
+      "workflow": "fallback",
+      "architecture": "fallback",
+      "sequence": "fallback",
+      "erd": "none"
+    }
+  }
+}

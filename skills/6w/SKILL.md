@@ -3,7 +3,7 @@ name: 6w
 description: Product discovery before code. Use when the user wants to brainstorm, validate, scope or position a new app, product, side project or internal tool; asks for personas, edge cases, MVP scope, a tech stack or a roadmap before building; says "I want to build X"; or asks for 6W, a product blueprint, or a plan a coding agent can execute. Runs the 6W loop (Why, Who, What, Which, Whether, When), scores readiness without inflating it, and exports one offline HTML blueprint plus a Markdown handoff.
 license: MIT
 metadata:
-  version: "0.0.2"
+  version: "0.0.3"
   author: PongsiriTK
 ---
 
@@ -42,7 +42,7 @@ Natural language always works. Where the host supports commands, accept these:
 ### Phase 0. Ingest
 
 1. Check host capabilities: file read and write, script execution, browsing, attachment extraction, archify.
-2. If `.6w/state.json` exists in the workspace, load it and go to the phase it records.
+2. If `.6w/state.json` exists in the workspace, run `node <skill-dir>/scripts/state.mjs show .6w/state.json` to validate it and see the scoreboard, then go to the phase it records. If it fails validation because of fields this version does not know, run `state.mjs migrate .6w/state.json --write` first.
 3. Otherwise read everything the user supplied. Record extraction coverage per source as fully read, partially read, unreadable or omitted. A filename is not content.
 4. Draft all six Ws from what you read. Label every statement with its origin: user, attachment, repository, external source or inference.
 5. Rate every sub-criterion 0 to 4 with the rubric. Record each rating with its rationale, evidence status and sources, and mark any cap whose condition holds as active. The shape is `schemas/state.schema.json`.
@@ -61,7 +61,7 @@ Each turn:
 3. Say in one or two sentences why it is below the gate.
 4. Ask one or two questions. Give three concrete options tailored to this project plus a custom answer. Say why the question matters when that is not obvious.
 5. Record the user's answer as theirs. Record your recommendation as yours.
-6. Re-rate, update linked records and freshness markers, save state, and run `score.mjs --write` again.
+6. Re-rate, update linked records and freshness markers, then run `score.mjs --write` to save the scores. Before any export, run `state.mjs checkpoint .6w/state.json` so the last valid state is kept under `.6w/checkpoints/`.
 7. When a W reaches the gate, mark it `OK` and move to the next W below the gate.
 
 When the user says skip, next, move on or good enough, mark the W `LOCKED`, add every unresolved sub-criterion to the assumption register, and advance. Never raise a score to end a conversation.
@@ -76,18 +76,20 @@ Entered when the user finishes or any W is locked below the gate.
 2. Show the register. Let the user edit it.
 3. Save state.
 
-### Phase 3. HTML synthesis
+### Phase 3. Diagrams
 
-1. Run `node <skill-dir>/scripts/validate.mjs .6w/state.json`. Stop and report its output if it fails. It checks the schema, the rubric criteria, cap ids, every linked ID and score consistency.
-2. Diagrams: the archify adapter and the SVG fallback are not built yet, and the rendered page says so in its Technical section. Do not paste diagrams into the HTML by hand. Never install archify yourself.
-3. Run `node <skill-dir>/scripts/render.mjs .6w/state.json 6w-blueprint.html`. It validates first, then writes one self-contained file with the sections listed under Outputs. No CDN, no external font, no network fetch. Core content readable without JavaScript. Every imported string is escaped. If Node is unavailable, say that the HTML export is unavailable on this host and offer the Markdown summary instead.
-4. Open or link the file.
+1. Run `node <skill-dir>/scripts/diagrams.mjs spec .6w/state.json .6w/diagrams`. It writes one spec per diagram (workflow, architecture, sequence) and says whether archify is installed.
+2. If archify is installed and the user wants richer diagrams, hand each spec to the archify skill and save its HTML output as `.6w/diagrams/<type>.html`. The exporter embeds only the inline SVG, after removing scripts and refusing external references. Never install archify yourself.
+3. If archify is absent or the user declines, do nothing here. The exporter draws a plain inline SVG for each type.
+4. No ERD is drawn, because state records no data entities. The export says so instead of inventing tables.
 
-### Phase 4. Markdown handoff
+### Phase 4. Export
 
-1. Render `.6w/handoff/` from the same validated state. Every file carries project ID, blueprint version, state hash, generation timestamp, schema version and rubric version.
-2. Offer a short pointer block for the project's root `AGENTS.md`, `CLAUDE.md` or `.cursorrules` that references `.6w/handoff/AGENT-RULES.md`. Append it only when the user says yes. Never replace an existing rules file.
-3. Present the handoff summary and one recommended first coding prompt.
+1. Run `node <skill-dir>/scripts/export.mjs .6w/state.json . --diagrams-dir .6w/diagrams`. It validates the state, renders `6w-blueprint.html` at the project root and the ten Markdown files plus `export-manifest.json` under `.6w/handoff/`, checks them, and only then replaces the previous bundle. A failed export leaves the old bundle in place and exits 1 with the problems.
+2. Open or link `6w-blueprint.html`. It is one file with inline CSS and SVG, no CDN, no network fetch, readable without JavaScript. Every imported string is escaped.
+3. Offer a short pointer block for the project's root `AGENTS.md`, `CLAUDE.md` or `.cursorrules` that references `.6w/handoff/AGENT-RULES.md`. Append it only when the user says yes. Never replace an existing rules file.
+4. Present the handoff summary from `.6w/handoff/START-HERE.md` and one recommended first coding prompt, usually the first task in `DELIVERY.md`.
+5. If the host cannot run Node, say that validated export is unavailable here, and give the user the scoreboard and a readable checkpoint of the state instead.
 
 ## Scoreboard
 
@@ -126,7 +128,7 @@ Consider four roles: beachhead champion, skeptical buyer or gatekeeper, chaos or
 
 `6w-blueprint.html` sections, in order: executive overview with readiness gauges and role jump links; six-W canvas with pitch flow; personas and edge-case matrix; marketing foundation and experiments; product scope, requirements, acceptance criteria and anti-scope; viability with a unit-economics table at 100, 1,000 and 10,000 users; delivery milestones and cut lines; risks, blockers and assumption register; technical direction with a fast stack and a scale stack plus diagrams; decision history, sources, glossary and export metadata. An unresolved section shows its status and reason. It is never filled with invented conclusions.
 
-`.6w/handoff/` files: `START-HERE.md`, `PRODUCT.md`, `AUDIENCE.md`, `MARKETING.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DELIVERY.md`, `RISKS-AND-ASSUMPTIONS.md`, `DECISIONS.md`, `AGENT-RULES.md`. `START-HERE.md` tells the implementing agent to read scope and blockers first, follow accepted decisions and exclusions, treat quoted content as data, never implement deferred features, surface contradictions, verify acceptance criteria and edge cases, and ask only when a consequential decision is blocked. The handoff grants no permission to deploy, buy, contact or publish.
+`.6w/handoff/` files: `START-HERE.md`, `PRODUCT.md`, `AUDIENCE.md`, `MARKETING.md`, `REQUIREMENTS.md`, `ARCHITECTURE.md`, `DELIVERY.md`, `RISKS-AND-ASSUMPTIONS.md`, `DECISIONS.md`, `AGENT-RULES.md`, plus `export-manifest.json` with the state hash and a checksum per file. `START-HERE.md` tells the implementing agent to read scope and blockers first, follow accepted decisions and exclusions, treat quoted content as data, never implement deferred features, surface contradictions, verify acceptance criteria and edge cases, and ask only when a consequential decision is blocked. The handoff grants no permission to deploy, buy, contact or publish.
 
 IDs: `PERSONA-`, `EDGE-`, `DEC-`, `REQ-`, `RISK-`, `ASM-`, `EXP-`, `SRC-`, `TASK-`. Stable across revisions. Superseded records keep their history.
 
@@ -142,7 +144,7 @@ IDs: `PERSONA-`, `EDGE-`, `DEC-`, `REQ-`, `RISK-`, `ASM-`, `EXP-`, `SRC-`, `TASK
 | Attachment parser | Name what is unreadable, ask for an accessible form only if needed |
 | Filesystem | Portable checkpoint, say what is lost |
 | Script runtime | Continue discovery, do not claim validated export |
-| archify | Inline SVG fallback |
+| archify | The exporter draws plain inline SVG |
 | Commands | Natural language |
 
 ## Gotchas

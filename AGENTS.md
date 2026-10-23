@@ -9,9 +9,9 @@ This repository holds the 6W skill and its blueprint. Read [BLUEPRINT.md](BLUEPR
 | `BLUEPRINT.md` | The master specification. Every behavior rule, output contract and open decision lives here. |
 | `skills/6w/SKILL.md` | The portable skill. Hosts load this file. Keep it under 500 lines and keep every path it names real. |
 | `skills/6w/references/` | Material the skill reads on demand: the scoring rubric and later the persona, risk and stack references. |
-| `skills/6w/scripts/` | `rubric.mjs` holds the numbers, `scoring.mjs` the pure functions, `score.mjs` the scoring CLI, `validate.mjs` checks a state file, `render.mjs` writes the HTML blueprint. Tests sit next to them as `*.test.mjs`. |
+| `skills/6w/scripts/` | `rubric.mjs` holds the numbers, `scoring.mjs` the pure functions, `score.mjs` the scoring CLI, `validate.mjs` checks a state file, `state.mjs` saves and checkpoints, `diagrams.mjs` handles archify and the SVG fallback, `render.mjs` and `handoff.mjs` produce HTML and Markdown, `export.mjs` writes the bundle atomically. Tests sit next to them as `*.test.mjs`. |
 | `skills/6w/templates/` | `blueprint.css`, inlined by `render.mjs`. |
-| `docs/demo/menulens/` | The rendered complete example, served by GitHub Pages. Regenerate with `render.mjs --generated-at <the meta value>` after changing the renderer or the example; a test fails when it is stale. |
+| `docs/demo/menulens/` | The exported complete example (page plus handoff), served by GitHub Pages. Regenerate with `node scripts/build-demo.mjs` after changing any renderer or the example; a test fails when it is stale. |
 | `skills/6w/schemas/` | `state.schema.json` is the shape of `.6w/state.json`. Change it together with `validate.mjs` and both examples. |
 | `examples/` | The MenuLens demo states. Both must validate and their scores must match `score.mjs`. |
 | `docs/plans/` | Implementation plans. One file per plan, with phases, checklists and validation. |
@@ -25,6 +25,7 @@ This repository holds the 6W skill and its blueprint. Read [BLUEPRINT.md](BLUEPR
 
 - `skills/6w/SKILL.md` is the single source of truth for behavior. Host manifests only point at it. Never fork skill text per host.
 - Do not reference a file that does not exist. `npm test` fails on a broken relative link.
+- Bump `BLUEPRINT_VERSION` in `export.mjs` and the default in `render.mjs` together with the manifest versions.
 - Never write a score by hand. Ratings and active caps are judgments recorded in state. `score.mjs --write` produces the numbers and `validate.mjs` rejects a mismatch.
 - The rubric numbers live in `rubric.mjs` and `references/scoring-rubric.md`. Change both together and bump the rubric version.
 - The version string is identical across every file listed in `.version-bump.json`.
