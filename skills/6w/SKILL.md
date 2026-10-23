@@ -3,7 +3,7 @@ name: 6w
 description: Product discovery before code. Use when the user wants to brainstorm, validate, scope or position a new app, product, side project or internal tool; asks for personas, edge cases, MVP scope, a tech stack or a roadmap before building; says "I want to build X"; or asks for 6W, a product blueprint, or a plan a coding agent can execute. Runs the 6W loop (Why, Who, What, Which, Whether, When), scores readiness without inflating it, and exports one offline HTML blueprint plus a Markdown handoff.
 license: MIT
 metadata:
-  version: "0.0.1"
+  version: "0.0.2"
   author: PongsiriTK
 ---
 
@@ -45,8 +45,8 @@ Natural language always works. Where the host supports commands, accept these:
 2. If `.6w/state.json` exists in the workspace, load it and go to the phase it records.
 3. Otherwise read everything the user supplied. Record extraction coverage per source as fully read, partially read, unreadable or omitted. A filename is not content.
 4. Draft all six Ws from what you read. Label every statement with its origin: user, attachment, repository, external source or inference.
-5. Rate every sub-criterion 0 to 4 with the rubric. Compute each W score. Apply caps.
-6. Write `.6w/state.json`. Show the scoreboard. Select the first W in sequence below the gate.
+5. Rate every sub-criterion 0 to 4 with the rubric. Record each rating with its rationale, evidence status and sources, and mark any cap whose condition holds as active. The shape is `schemas/state.schema.json`.
+6. Write `.6w/state.json`. Run `node <skill-dir>/scripts/score.mjs .6w/state.json --write` to compute the scores and print the scoreboard. Select the first W in sequence below the gate.
 
 Confirm only the setup fields that change the outcome: working title, maturity (idea, prototype, product), target stage (explore, prototype, build MVP, pilot), depth. Never ask all of them up front.
 
@@ -61,7 +61,7 @@ Each turn:
 3. Say in one or two sentences why it is below the gate.
 4. Ask one or two questions. Give three concrete options tailored to this project plus a custom answer. Say why the question matters when that is not obvious.
 5. Record the user's answer as theirs. Record your recommendation as yours.
-6. Re-rate, recompute, update linked records and freshness markers, checkpoint state.
+6. Re-rate, update linked records and freshness markers, save state, and run `score.mjs --write` again.
 7. When a W reaches the gate, mark it `OK` and move to the next W below the gate.
 
 When the user says skip, next, move on or good enough, mark the W `LOCKED`, add every unresolved sub-criterion to the assumption register, and advance. Never raise a score to end a conversation.
@@ -78,7 +78,7 @@ Entered when the user finishes or any W is locked below the gate.
 
 ### Phase 3. HTML synthesis
 
-1. Validate state. Stop and report if any linked ID is missing.
+1. Run `node <skill-dir>/scripts/validate.mjs .6w/state.json`. Stop and report its output if it fails. It checks the schema, the rubric criteria, cap ids, every linked ID and score consistency.
 2. If archify is installed, send it the diagram payload from `BLUEPRINT.md` section 10.2 and request `architecture`, `sequence`, `erd` and `workflow`. Embed the inline SVG and a text description. If archify is absent, produce a simple inline SVG per diagram and the same text description. Never install archify yourself.
 3. Render `6w-blueprint.html` in the project root with the ten sections listed under Outputs. No CDN, no external font, no network fetch. Core content readable without JavaScript. Escape every imported string.
 4. Open or link the file.
@@ -112,7 +112,7 @@ Status: `OK` at or above the gate. `..` in progress. `CAP` a cap is active. `LOC
 
 ## Scoring in one paragraph
 
-Each W has four sub-criteria weighted 30, 25, 25 and 20. Rate each 0 to 4. The raw score is the sum of weight × rating / 4. Apply the W's cap if its condition holds. Round half up. The overall number is the mean of six scores and is only a summary. A deterministic scoring script is planned. Until it ships, show the arithmetic in your reply so the user can check it. Full anchors and cap conditions are in `references/scoring-rubric.md`.
+Each W has four sub-criteria weighted 30, 25, 25 and 20. Rate each 0 to 4. The raw score is the sum of weight × rating / 4, rounded half up, then limited by any active cap. The overall number is the mean of six scores and is only a summary. You record the ratings and the active caps. `scripts/score.mjs` does the arithmetic, so never write a score by hand. Full anchors and cap conditions are in `references/scoring-rubric.md`. If the host cannot run Node, show the arithmetic in your reply instead and say that the score is unverified.
 
 ## Evidence rules
 
@@ -132,7 +132,7 @@ IDs: `PERSONA-`, `EDGE-`, `DEC-`, `REQ-`, `RISK-`, `ASM-`, `EXP-`, `SRC-`, `TASK
 
 ## State
 
-`.6w/state.json` in the user's project is the source of truth. Both outputs are derived from it. Save after any accepted material change and before export. Write atomically. Detect a changed revision before writing. Never store state inside the skill directory. Never store access tokens in state or exports. If the host cannot write files, give the user a readable checkpoint and say that it is not a saved project.
+`.6w/state.json` in the user's project is the source of truth and follows `schemas/state.schema.json`. Both outputs are derived from it. Two filled examples live in the repository under `examples/`. Save after any accepted material change and before export. Write atomically. Detect a changed revision before writing. Never store state inside the skill directory. Never store access tokens in state or exports. If the host cannot write files, give the user a readable checkpoint and say that it is not a saved project.
 
 ## Host degradation
 

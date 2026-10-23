@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PongsiriTK/6w/skills/6w/schemas/state.schema.json",
+  "title": "6W project state",
+  "description": "Canonical state for one 6W project. Lives at .6w/state.json in the user's project. HTML and Markdown outputs are derived from it.",
+  "type": "object",
+  "required": ["schemaVersion", "rubricVersion", "metadata", "session", "capabilities", "ws", "records"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "0.1" },
+    "rubricVersion": { "const": "0.1" },
+    "metadata": {
+      "type": "object",
+      "required": ["projectId", "title", "createdAt", "updatedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "projectId": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "title": { "type": "string", "minLength": 1 },
+        "language": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "maturity": { "enum": ["idea", "prototype", "product"] }
+      }
+    },
+    "session": {
+      "type": "object",
+      "required": ["mode", "stage", "gate", "phase"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "enum": ["quick", "deep"] },
+        "tone": { "enum": ["standard", "roast"] },
+        "stage": { "enum": ["explore", "prototype", "build-mvp", "pilot"] },
+        "gate": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "phase": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "focus": { "enum": ["why", "who", "what", "which", "whether", "when"] },
+        "turns": { "type": "integer", "minimum": 0 },
+        "overrides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["w", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "w": { "enum": ["why", "who", "what", "which", "whether", "when"] },
+              "reason": { "type": "string" },
+              "at": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fileWrite": { "type": "boolean" },
+        "scripts": { "type": "boolean" },
+        "browsing": { "type": "boolean" },
+        "attachments": { "type": "boolean" },
+        "archify": { "type": "boolean" }
+      }
+    },
+    "ws": {
+      "type": "object",
+      "required": ["why", "who", "what", "which", "whether", "when"],
+      "additionalProperties": false,
+      "properties": {
+        "why": { "$ref": "#/$defs/w" },
+        "who": { "$ref": "#/$defs/w" },
+        "what": { "$ref": "#/$defs/w" },
+        "which": { "$ref": "#/$defs/w" },
+        "whether": { "$ref": "#/$defs/w" },
+        "when": { "$ref": "#/$defs/w" }
+      }
+    },
+    "overall": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "records": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+        "personas": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "edges": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } },
+        "requirements": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "risks": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "assumptions": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "experiments": { "type": "array", "items": { "$ref": "#/$defs/record" } },
+        "tasks": { "type": "array", "items": { "$ref": "#/$defs/record" } }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "stateHash": { "type": "string" },
+        "generatedAt": { "type": "string" },
+        "files": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "$defs": {
+    "evidence": { "enum": ["unknown", "assumption", "user", "source", "observed"] },
+    "idList": { "type": "array", "items": { "type": "string" } },
+    "rating": {
+      "type": "object",
+      "required": ["criterion", "rating", "rationale", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "criterion": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "rating": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "sources": { "$ref": "#/$defs/idList" },
+        "links": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "cap": {
+      "type": "object",
+      "required": ["id", "active"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "active": { "type": "boolean" },
+        "reason": { "type": "string" }
+      }
+    },
+    "w": {
+      "type": "object",
+      "required": ["summary", "ratings"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": { "type": "string" },
+        "ratings": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "$ref": "#/$defs/rating" } },
+        "caps": { "type": "array", "items": { "$ref": "#/$defs/cap" } },
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "openQuestions": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" },
+        "links": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "pattern": "^(PERSONA|EDGE|DEC|REQ|RISK|ASM|EXP|SRC|TASK)-[0-9]{3,}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "status": { "type": "string" },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "links": { "$ref": "#/$defs/idList" },
+        "sources": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["id", "title", "status"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "pattern": "^DEC-[0-9]{3,}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["proposed", "accepted", "deferred", "rejected", "superseded"] },
+        "rationale": { "type": "string" },
+        "alternatives": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "affects": { "$ref": "#/$defs/idList" },
+        "links": { "$ref": "#/$defs/idList" },
+        "sources": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "title", "origin", "coverage"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string", "pattern": "^SRC-[0-9]{3,}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "origin": { "enum": ["user", "attachment", "repository", "external", "inference"] },
+        "locator": { "type": "string" },
+        "coverage": { "enum": ["fully-read", "partially-read", "unreadable", "omitted"] },
+        "accessedAt": { "type": "string" },
+        "limitations": { "type": "string" }
+      }
+    }
+  }
+}

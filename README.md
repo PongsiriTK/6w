@@ -11,11 +11,24 @@
 
 ## Status
 
-This repository holds the master blueprint and a working draft of the skill. The renderer, validator, schemas and host adapters have not been built yet. The skill already works as a conversational guide. Deterministic scoring and the HTML export arrive with the phases in `docs/plans/0001-v0.1-implementation.md`. No host is listed as tested in `docs/compatibility.md` yet.
+This repository holds the master blueprint, the skill, its scoring and validation scripts, and a worked demo. The skill works today as a conversational guide, and the scripts make its scores deterministic. The HTML renderer, the Markdown export and the host tests are the next phases in `docs/plans/0001-v0.1-implementation.md`. No host is listed as tested in `docs/compatibility.md` yet.
 
 ## What it does
 
 You bring an idea, some notes, a brief or a repository. 6W reads it, drafts six decisions with their provenance, shows you a scoreboard, and asks one or two questions per turn with concrete options. You can skip, go deeper, change your mind, or finish at any time. Finishing early gives you an honest partial package, never an invented complete one.
+
+```mermaid
+flowchart LR
+    A["Idea, notes,<br/>brief or repo"] --> B["Ingest and rate<br/>all six Ws"]
+    B --> C{"Any W<br/>below the gate?"}
+    C -- yes --> D["Ask 1 or 2 questions<br/>with 3 options"]
+    D --> E["Record the answer,<br/>rescore"]
+    E --> C
+    C -- "no, or finish" --> F["Lock assumptions<br/>and risks"]
+    F --> G[(".6w/state.json")]
+    G --> H["6w-blueprint.html<br/>for people"]
+    G --> I[".6w/handoff/<br/>for the coding agent"]
+```
 
 Two outputs come from one state file:
 
@@ -38,6 +51,22 @@ overall 62/100  [############........]
 ```
 
 Each W is scored on four named sub-criteria. Hard caps stop a vague idea from scoring 95. Evidence is tracked separately from the score, so "the user agreed" never turns into "this is proven".
+
+## Demo
+
+`examples/` holds a worked session on MenuLens, a menu scanner for travelers with food allergies. The naive version trips every hard cap. The refined version clears them in eleven turns. Both state files validate and their scores are produced by the scripts, so you can rerun them:
+
+```bash
+node skills/6w/scripts/score.mjs examples/menulens-partial/state.json
+node skills/6w/scripts/score.mjs examples/menulens-complete/state.json
+node skills/6w/scripts/validate.mjs examples/menulens-complete/state.json
+```
+
+The session is synthetic, authored to exercise the rubric. `examples/README.md` has both scoreboards, the turn log and what the demo does and does not show.
+
+## Where the name comes from
+
+6W adapts the Five Ws, the Who, What, When, Where, Why and How that journalists and Kipling's "six honest serving-men" have used for over a century. Two of the six change and one is added. Where becomes Which, because for a product the question is which platform and channel, not which place. How is dropped, because how to build it is the coding agent's job after the handoff. Whether is added, because a product plan needs a go or no-go gate that the original set never had.
 
 ## Install
 
@@ -76,6 +105,9 @@ Or, where the host supports commands, `/6w`, `/6w quick`, `/6w deep`, `/6w roast
 | `BLUEPRINT.md` | The master specification: framework, conversation design, rubric, outputs, system design, repository layout, acceptance criteria and open decisions |
 | `skills/6w/SKILL.md` | The portable skill every host loads |
 | `skills/6w/references/scoring-rubric.md` | Sub-criteria, anchors, caps and the formula |
+| `skills/6w/scripts/` | `score.mjs` computes scores and prints the scoreboard, `validate.mjs` checks a state file, `rubric.mjs` holds the numbers, tests next to them |
+| `skills/6w/schemas/` | JSON Schema for the state file and the export manifest |
+| `examples/` | The MenuLens demo: a naive state and a refined state |
 | `docs/plans/` | Implementation plans with checklists |
 | `docs/compatibility.md` | Tested-host matrix |
 | `docs/porting-to-a-new-host.md` | How to add a host |

@@ -1,6 +1,6 @@
 # 6W master blueprint
 
-Version 0.0.1. 23 October 2026. Status: specification and skill draft. No renderer, validator or host adapter has been built yet. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
+Version 0.0.2. 23 October 2026. Status: specification, skill, scoring and validation scripts, state schema and a worked demo. The renderer, export and host adapters are not built yet. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
 
 Tagline: give your idea a foundation before you build.
 
@@ -82,6 +82,8 @@ These segments are hypotheses, not research.
 Initial focus: solo builders and small teams preparing an MVP with a coding agent.
 
 ## 3. The six Ws
+
+6W adapts the Five Ws of journalism (Who, What, When, Where, Why, How). Where becomes Which, because a product chooses a platform and channel rather than a place. How is dropped, because implementation is the coding agent's job after the handoff. Whether is added as the go or no-go gate the original set lacks. The lineage is stated in the README so readers who know 5W1H see what changed.
 
 The order is Why, Who, What, Which, Whether, When. The order adapts to what the user already knows. Risk screening starts on the first turn and does not wait for the Whether phase. Economics lives under Why and Whether. Distribution lives under Who and Why. Delivery capacity lives under When. Cross-links stop duplicated, inconsistent answers.
 
@@ -527,11 +529,18 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   │   ├── stack-archetypes.md        (planned)
 │   │   ├── interview-examples.md      (planned)
 │   │   └── archify-bridge.md          (planned)
-│   ├── schemas/                 (planned) state.schema.json, export-manifest.schema.json
+│   ├── schemas/                 state.schema.json, export-manifest.schema.json
 │   ├── templates/               (planned) blueprint.html, handoff/*.md
-│   └── scripts/                 (planned) validate.mjs, score.mjs, render.mjs, export.mjs
-├── examples/                    (planned) complete, partial and revised packages
-└── tests/                       (planned) fixtures and invariants
+│   └── scripts/
+│       ├── rubric.mjs           weights, criteria and caps
+│       ├── score.mjs            scores, caps, scoreboard, --write
+│       ├── validate.mjs         schema, rubric, links, score consistency
+│       ├── *.test.mjs           node --test suites next to the code (pstack)
+│       ├── state.mjs            (planned)
+│       ├── render.mjs           (planned)
+│       └── export.mjs           (planned)
+├── examples/                    menulens-partial, menulens-complete, README.md
+└── tests/                       (planned) host checks and fixtures
 ```
 
 Conventions taken from each reference repository:

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PongsiriTK/6w/skills/6w/schemas/export-manifest.schema.json",
+  "title": "6W export manifest",
+  "description": "Written next to an export. Records which state snapshot produced which files, so HTML and Markdown can be checked for consistency.",
+  "type": "object",
+  "required": ["schemaVersion", "projectId", "blueprintVersion", "stateHash", "generatedAt", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "0.1" },
+    "projectId": { "type": "string" },
+    "blueprintVersion": { "type": "string" },
+    "rubricVersion": { "type": "string" },
+    "stateHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "generatedAt": { "type": "string" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "kind": { "enum": ["html", "markdown", "diagram"] }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "ok": { "type": "boolean" },
+        "problems": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

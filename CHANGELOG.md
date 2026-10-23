@@ -4,6 +4,21 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-10-23
+
+### Added
+
+- `skills/6w/schemas/state.schema.json` and `export-manifest.schema.json`.
+- `skills/6w/scripts/rubric.mjs`, `score.mjs` (scores, caps, scoreboard, idempotent `--write`) and `validate.mjs` (schema, rubric, linked IDs, score consistency), with `node --test` suites.
+- MenuLens demo under `examples/`: a naive state that trips every cap and a refined state that clears them, with a turn log.
+- Lineage note on the Five Ws in the README and blueprint.
+- Mermaid flow diagram in the README.
+
+### Changed
+
+- `SKILL.md` now calls `score.mjs` and `validate.mjs` instead of asking for hand arithmetic.
+- `npm test` runs the repository gate and the script tests.
+
 ## [0.0.1] - 2026-10-23
 
 ### Added
