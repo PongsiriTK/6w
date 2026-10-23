@@ -1,0 +1,41 @@
+{
+  "name": "6w",
+  "version": "0.0.1",
+  "description": "Product foundation for agent-assisted builders. Runs the 6W discovery loop before code and exports one offline HTML blueprint plus an agent-ready Markdown handoff.",
+  "author": {
+    "name": "Pongsiri Tonsuk",
+    "url": "https://github.com/PongsiriTK"
+  },
+  "homepage": "https://github.com/PongsiriTK/6w",
+  "repository": "https://github.com/PongsiriTK/6w",
+  "license": "MIT",
+  "keywords": [
+    "product-discovery",
+    "mvp",
+    "personas",
+    "planning",
+    "6w"
+  ],
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "6W",
+    "shortDescription": "Define the product before you build it",
+    "longDescription": "6W guides builders through Why, Who, What, Which, Whether and When before implementation, scores readiness without inflating it, and exports one offline HTML blueprint plus Markdown files a coding agent can execute.",
+    "developerName": "Pongsiri Tonsuk",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use 6W to help me develop this idea.",
+      "Review this brief using 6W."
+    ],
+    "websiteURL": "https://github.com/PongsiriTK/6w",
+    "brandColor": "#111111",
+    "logo": "./assets/logo/6w-icon.png",
+    "screenshots": []
+  }
+}

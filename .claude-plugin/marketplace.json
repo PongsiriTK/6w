@@ -1,0 +1,18 @@
+{
+  "name": "6w",
+  "description": "Marketplace for the 6W product-foundation skill",
+  "owner": {
+    "name": "Pongsiri Tonsuk"
+  },
+  "plugins": [
+    {
+      "name": "6w",
+      "description": "Product foundation for agent-assisted builders. Runs the 6W discovery loop before code and exports one offline HTML blueprint plus an agent-ready Markdown handoff.",
+      "version": "0.0.1",
+      "source": "./",
+      "author": {
+        "name": "Pongsiri Tonsuk"
+      }
+    }
+  ]
+}

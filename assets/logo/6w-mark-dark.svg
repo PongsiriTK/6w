@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318 170" width="318" height="170" role="img" aria-label="6W">
+  <title>6W</title>
+  <g fill="none" stroke="#F5F5F4" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 116 30 C 82 42, 56 72, 56 106"/>
+    <circle cx="88" cy="106" r="32"/>
+    <polyline points="162,30 186,138 212,60 238,138 262,30"/>
+  </g>
+</svg>
