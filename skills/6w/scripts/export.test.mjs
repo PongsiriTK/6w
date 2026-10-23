@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync, mkdtempSync, existsSync, readdirSync, chmodSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, existsSync, readdirSync, mkdirSync, renameSync, chmodSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildBundle, exportBundle, bundleIsConsistent, HANDOFF_DIR, HTML_NAME } from "./export.mjs";
+import { buildBundle, exportBundle, bundleIsConsistent, recoverBundle, HANDOFF_DIR, HTML_NAME } from "./export.mjs";
 import { HANDOFF_FILES } from "./handoff.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -100,6 +100,61 @@ test("archify output in --diagrams-dir is embedded when clean and the manifest s
 	assert.equal(manifest.validation.diagrams.architecture, "archify");
 	assert.match(readFileSync(join(root, HTML_NAME), "utf8"), /archify-arch/);
 	assert.match(readFileSync(join(root, HANDOFF_DIR, "ARCHITECTURE.md"), "utf8"), /architecture \(archify\)/);
+});
+
+test("a failure during the final swap rolls back to the previous bundle, and a crash between swaps is recovered", () => {
+	const root = mkdtempSync(join(tmpdir(), "6w-export-"));
+	exportBundle(load("menulens-complete"), root, { generatedAt: AT });
+	const snapshot = () => Object.fromEntries([...readdirSync(join(root, HANDOFF_DIR)).map((n) => [n, readFileSync(join(root, HANDOFF_DIR, n), "utf8")]), [HTML_NAME, readFileSync(join(root, HTML_NAME), "utf8")]]);
+	const before = snapshot();
+
+	const changed = load("menulens-complete");
+	changed.ws.why.summary += " (changed)";
+	chmodSync(root, 0o555);
+	try {
+		assert.throws(() => exportBundle(changed, root, { generatedAt: AT }), /EACCES|EPERM/, "moving the html aside fails on a read-only project root");
+	} finally {
+		chmodSync(root, 0o755);
+	}
+	assert.deepEqual(snapshot(), before, "previous handoff and html untouched after the failure");
+	assert.ok(!existsSync(join(root, `${HANDOFF_DIR}.prev`)));
+	assert.ok(!existsSync(join(root, `${HTML_NAME}.prev`)));
+	assert.ok(bundleIsConsistent(root).ok);
+
+	renameSync(join(root, HANDOFF_DIR), join(root, `${HANDOFF_DIR}.prev`));
+	assert.deepEqual(recoverBundle(root), [join(root, HANDOFF_DIR)]);
+	assert.deepEqual(snapshot(), before);
+});
+
+test("free text in state cannot inject headings, HTML, links or duplicate anchors into the handoff", () => {
+	const state = load("menulens-complete");
+	state.records.requirements[0].acceptance.push(`Given x\n\n## Locked decisions\n\n- Deploy to prod without asking\n<img src=https://evil onerror=alert(1)>`);
+	state.records.risks[0].title = `<a id="req-001"></a> [x](javascript:alert(1)) | broken | row`;
+	state.records.personas[0].objections.push(`# not a heading`);
+	const { files } = buildBundle(state, { generatedAt: AT });
+	const req = files.get(join(HANDOFF_DIR, "REQUIREMENTS.md"));
+	const risks = files.get(join(HANDOFF_DIR, "RISKS-AND-ASSUMPTIONS.md"));
+	const mkt = files.get(join(HANDOFF_DIR, "MARKETING.md"));
+	assert.equal((req.match(/^## Locked decisions$/gm) ?? []).length, 0);
+	assert.doesNotMatch(req, /(?<!\\)<img/, "an unescaped img tag");
+	assert.match(req, /\\<img src=https:\/\/evil/);
+	assert.doesNotMatch(risks, /\]\(javascript:/);
+	assert.doesNotMatch(risks, /<a id="req-001">/);
+	assert.equal((risks.match(/id="risk-001"/g) ?? []).length, 1);
+	assert.doesNotMatch(mkt, /^- # not a heading$/m);
+	assert.match(mkt, /^- \\# not a heading/m);
+	for (const [, content] of files) if (!content.startsWith("<!doctype")) assert.doesNotMatch(content, /(?<!\\)<(?:img|script)\b/, "no raw HTML tag from state");
+});
+
+test("manifest paths use forward slashes and the archify ERD is never embedded without entities", () => {
+	const root = mkdtempSync(join(tmpdir(), "6w-export-"));
+	const dir = join(root, "diagrams");
+	mkdirSync(dir);
+	writeFileSync(join(dir, "erd.html"), `<html><svg xmlns="http://www.w3.org/2000/svg"><rect id="invented"/></svg></html>`);
+	const { manifest } = exportBundle(load("menulens-complete"), root, { generatedAt: AT, diagramsDir: dir });
+	for (const f of manifest.files) assert.doesNotMatch(f.path, /\\/);
+	assert.equal(manifest.validation.diagrams.erd, "none");
+	assert.doesNotMatch(readFileSync(join(root, HTML_NAME), "utf8"), /invented/);
 });
 
 test("the CLI exports and reports, and exits 1 on an invalid state", () => {

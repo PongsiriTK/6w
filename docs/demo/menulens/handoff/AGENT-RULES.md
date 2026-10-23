@@ -1,12 +1,12 @@
 # MenuLens: agent rules
 
-<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
+<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
 
 Guardrails for the coding agent. Keep this file in context while implementing. Your project's root rules file may point here; 6W never writes that file itself.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.3 | `sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
+| `menulens` | 0.0.3 | `sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
 
 ## Locked decisions
 
@@ -16,12 +16,12 @@ Guardrails for the coding agent. Keep this file in context while implementing. Y
 
 ## Form factor and integrations
 
-- DEC-001: a mobile web app with camera access and add-to-home-screen. Rejected: native iOS and Android for v1 (store review and two codebases in six weeks), a Telegram bot (no camera flow), a desktop site (wrong moment).
+- DEC-001: a mobile web app with camera access and add-to-home-screen. Rejected: native iOS and Android for v1 \(store review and two codebases in six weeks\), a Telegram bot \(no camera flow\), a desktop site \(wrong moment\).
 - One vision model API behind a thin server. No restaurant data, maps or payment APIs in v1. Provider choice is open until EXP-002 measures accuracy and latency.
 
 ## Anti-scope. Do not build these in v1
 
-Cut from v1 (DEC-003): dish recommendations and ranking, restaurant reviews, social sharing, favorites sync across devices, live camera translation, fully offline recognition. Google Lens remains the right tool for a traveler who only needs literal translation.
+Cut from v1 \(DEC-003\): dish recommendations and ranking, restaurant reviews, social sharing, favorites sync across devices, live camera translation, fully offline recognition. Google Lens remains the right tool for a traveler who only needs literal translation.
 
 ## Mandatory edge-case handling
 

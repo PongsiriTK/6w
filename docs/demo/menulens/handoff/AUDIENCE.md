@@ -1,12 +1,12 @@
 # MenuLens: audience
 
-<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
+<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
 
 Personas with their evidence status, the buyer and user relationship, and the edge cases that change product decisions.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.3 | `sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
+| `menulens` | 0.0.3 | `sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
 
 ## Personas
 
@@ -61,7 +61,7 @@ Persona [PERSONA-001](AUDIENCE.md#persona-001). Severity medium. Frequency frequ
 
 Persona [PERSONA-001](AUDIENCE.md#persona-001). Severity critical. Frequency always. Scope decision support-now.
 
-- Impact: A dish with no flagged ingredient can still be unsafe (shared fryer, soy sauce with wheat)
+- Impact: A dish with no flagged ingredient can still be unsafe \(shared fryer, soy sauce with wheat\)
 - Response: Every card says that flags are a warning to confirm, not a clearance. The question card asks about preparation, not only ingredients.
 - Test: Given any dish card, then the confirm-with-staff line and the preparation question are present.
 - Links: [PERSONA-001](AUDIENCE.md#persona-001), [RISK-001](RISKS-AND-ASSUMPTIONS.md#risk-001), [REQ-003](REQUIREMENTS.md#req-003)

@@ -12,14 +12,25 @@ const FILE_FOR = { PERSONA: "AUDIENCE.md", EDGE: "AUDIENCE.md", DEC: "DECISIONS.
 const ref = (id) => `[${id}](${FILE_FOR[id.split("-")[0]]}#${id.toLowerCase()})`;
 const refs = (ids) => (ids ?? []).map(ref).join(", ");
 const anchor = (id) => `<a id="${id.toLowerCase()}"></a>`;
-const bullets = (items) => (items?.length ? items.map((i) => `- ${i}`).join("\n") : "");
+// Every string that comes from state passes through md(). It collapses newlines so a value
+// cannot start a new block, escapes Markdown punctuation and angle brackets so a value cannot
+// become a heading, a link, a list item, a table cell or an HTML tag, and escapes a leading
+// list or quote marker. IDs are validated by the schema and rendered raw.
+const md = (s) => {
+	let t = String(s ?? "").replace(/\r?\n+/g, " ").trim();
+	t = t.replace(/[\\`*_\[\]()#|<>!~]/g, (c) => `\\${c}`);
+	t = t.replace(/^(?=[-+>]|\d+\.)/, "\\");
+	return t;
+};
+const bullets = (items) => (items?.length ? items.map((i) => `- ${md(i)}`).join("\n") : "");
 const rationale = (state, w, key) => state.ws[w].ratings.find((r) => r.criterion === key)?.rationale ?? "";
-const md = (s) => String(s ?? "").replace(/\r?\n+/g, " ").trim();
-const row = (cells) => `| ${cells.map((c) => md(c).replace(/\|/g, "\\|")).join(" | ")} |`;
+const row = (cells) => `| ${cells.map((c) => md(c)).join(" | ")} |`;
+const OPEN_STATUSES = new Set([undefined, "open", "untested", "planned", "proposed"]);
+const label = (v) => (v === undefined || v === null || v === "" ? "unspecified" : md(v));
 const table = (headers, rows) => (rows.length ? [row(headers), `|${headers.map(() => " --- ").join("|")}|`, ...rows.map(row)].join("\n") : "");
 
 function head(state, meta, title, purpose) {
-	return `# ${state.metadata.title}: ${title}
+	return `# ${md(state.metadata.title)}: ${title}
 
 <!-- 6W handoff. project ${state.metadata.projectId}. blueprint ${meta.blueprintVersion}. state ${meta.hash}. generated ${meta.generatedAt}. schema ${state.schemaVersion}. rubric ${state.rubricVersion}. -->
 
@@ -40,15 +51,15 @@ export function renderHandoff(state, meta) {
 	const computed = computeScores(state);
 	const stage = { explore: "explore", prototype: "prototype", "build-mvp": "build MVP", pilot: "pilot" }[state.session.stage] ?? state.session.stage;
 	const primary = (R.personas ?? []).find((p) => p.priority === "primary") ?? (R.personas ?? [])[0];
-	const blockers = (R.risks ?? []).filter((r) => r.severity === "critical" && r.status !== "closed");
-	const openAsm = (R.assumptions ?? []).filter((a) => a.status !== "validated");
+	const blockers = (R.risks ?? []).filter((r) => r.severity === "critical" && OPEN_STATUSES.has(r.status));
+	const openAsm = (R.assumptions ?? []).filter((a) => OPEN_STATUSES.has(a.status));
 	const belowGate = WS.filter((w) => computed.ws[w.key].status !== "OK");
 	const files = {};
 
 	files["START-HERE.md"] = head(state, meta, "start here", `This directory is the implementation handoff produced by 6W from \`.6w/state.json\`. Read this file first, then the files in the order below. The HTML blueprint at the project root is for people; these files are for you.`) + `
 ## Status
 
-Stage: **${stage}**. Overall readiness ${computed.overall}/100 against a gate of ${computed.gate}. ${belowGate.length ? `Below the gate: ${belowGate.map((w) => `${w.label} (${computed.ws[w.key].score}, ${computed.ws[w.key].status})`).join(", ")}. Treat their open questions as blockers for anything that depends on them.` : "All six Ws are at or above the gate."}
+Stage: **${md(stage)}**. Overall readiness ${computed.overall}/100 against a gate of ${computed.gate}. ${belowGate.length ? `Below the gate: ${belowGate.map((w) => `${w.label} (${computed.ws[w.key].score}, ${computed.ws[w.key].status})`).join(", ")}. Treat their open questions as blockers for anything that depends on them.` : "All six Ws are at or above the gate."}
 
 \`\`\`text
 ${renderScoreboard(state, computed)}
@@ -56,9 +67,9 @@ ${renderScoreboard(state, computed)}
 
 ## Blockers and open assumptions
 
-${blockers.length ? `Critical risks still open:\n${blockers.map((r) => `- ${ref(r.id)} ${r.title}. Mitigation: ${md(r.mitigation)}`).join("\n")}` : "No open critical risk."}
+${blockers.length ? `Critical risks still open:\n${blockers.map((r) => `- ${ref(r.id)} ${md(r.title)}. Mitigation: ${md(r.mitigation)}`).join("\n")}` : "No open critical risk."}
 
-${openAsm.length ? `Assumptions you are building on, none validated yet:\n${openAsm.map((a) => `- ${ref(a.id)} ${a.title}. If false: ${md(a.implication)}`).join("\n")}` : "No open assumptions."}
+${openAsm.length ? `Assumptions you are building on, none validated yet:\n${openAsm.map((a) => `- ${ref(a.id)} ${md(a.title)}. If false: ${md(a.implication)}`).join("\n")}` : "No open assumptions."}
 
 ## Reading order
 
@@ -83,7 +94,7 @@ ${openAsm.length ? `Assumptions you are building on, none validated yet:\n${open
 
 ## Sources
 
-${R.sources?.length ? R.sources.map((s) => `- ${anchor(s.id)}\`${s.id}\` ${s.title}. Origin ${s.origin}, coverage ${s.coverage}.${s.limitations ? ` Limitations: ${md(s.limitations)}` : ""}`).join("\n") : noneNote("sources")}
+${R.sources?.length ? R.sources.map((s) => `- ${anchor(s.id)}\`${s.id}\` ${md(s.title)}. Origin ${s.origin}, coverage ${s.coverage}.${s.limitations ? ` Limitations: ${md(s.limitations)}` : ""}`).join("\n") : noneNote("sources")}
 `;
 
 	files["PRODUCT.md"] = head(state, meta, "product", "The six decisions, the problem, the value, the scope and the anti-scope.") + WS.map((w) => {
@@ -95,7 +106,7 @@ ${R.sources?.length ? R.sources.map((s) => `- ${anchor(s.id)}\`${s.id}\` ${s.tit
 Readiness ${r.score}/100, ${r.status}. Evidence: ${r.evidence}.
 
 ${table(["Sub-criterion", "Rating", "Evidence", "Rationale"], ws.ratings.map((x) => [x.criterion, `${x.rating}/4`, x.evidence, x.rationale]))}
-${(ws.caps ?? []).filter((c) => c.active).map((c) => `\nActive cap \`${c.id}\`: ${md(c.reason)}`).join("")}${ws.openQuestions?.length ? `\n\nOpen questions:\n${bullets(ws.openQuestions)}` : ""}`;
+${(ws.caps ?? []).filter((c) => c.active).map((c) => `\nActive cap \`${md(c.id)}\`: ${md(c.reason)}`).join("")}${ws.openQuestions?.length ? `\n\nOpen questions:\n${bullets(ws.openQuestions)}` : ""}`;
 	}).join("\n") + `
 
 ## Anti-scope
@@ -110,9 +121,9 @@ ${md(rationale(state, "why", "success-metric")) || noneNote("success metric")}
 	files["AUDIENCE.md"] = head(state, meta, "audience", "Personas with their evidence status, the buyer and user relationship, and the edge cases that change product decisions.") + `
 ## Personas
 
-${R.personas?.length ? R.personas.map((p) => `### ${anchor(p.id)}${p.id}. ${p.title}
+${R.personas?.length ? R.personas.map((p) => `### ${anchor(p.id)}${p.id}. ${md(p.title)}
 
-Role ${p.role ?? "unspecified"}. Priority ${p.priority ?? "unspecified"}. Evidence ${p.evidence ?? "unknown"}.
+Role ${label(p.role)}. Priority ${label(p.priority)}. Evidence ${label(p.evidence)}.
 
 ${table(["Field", "Value"], [["Situation", p.situation], ["Desired outcome", p.outcome], ["Workaround today", p.workaround], ["Trigger", p.trigger], ["Objections", (p.objections ?? []).join("; ")], ["Channels", (p.channels ?? []).join("; ")], ["First value", p.firstValue], ["Why excluded", p.reason]].filter(([, v]) => v))}
 
@@ -120,9 +131,9 @@ Links: ${refs(p.links) || "none"}. Sources: ${refs(p.sources) || "none"}.`).join
 
 ## Edge cases
 
-${R.edges?.length ? R.edges.map((e) => `### ${anchor(e.id)}${e.id}. ${e.title}
+${R.edges?.length ? R.edges.map((e) => `### ${anchor(e.id)}${e.id}. ${md(e.title)}
 
-Persona ${e.persona ? ref(e.persona) : "unspecified"}. Severity ${e.severity ?? "unspecified"}. Frequency ${e.frequency ?? "unknown"}. Scope decision ${e.scopeDecision ?? "unspecified"}.
+Persona ${e.persona ? ref(e.persona) : "unspecified"}. Severity ${label(e.severity)}. Frequency ${label(e.frequency)}. Scope decision ${label(e.scopeDecision)}.
 
 - Impact: ${md(e.impact)}
 - Response: ${md(e.response)}
@@ -140,7 +151,7 @@ ${primary ? `- Audience: ${md(primary.situation)}
 
 ## Objections and the proof each needs
 
-${primary?.objections?.length ? primary.objections.map((o) => `- ${o}. Proof needed: not yet recorded.`).join("\n") : noneNote("objections")}
+${primary?.objections?.length ? primary.objections.map((o) => `- ${md(o)}. Proof needed: not yet recorded.`).join("\n") : noneNote("objections")}
 
 ## Channels
 
@@ -148,19 +159,19 @@ ${bullets(primary?.channels) || noneNote("channels")}
 
 ## Experiments
 
-${R.experiments?.length ? R.experiments.map((e) => `### ${anchor(e.id)}${e.id}. ${e.title}
+${R.experiments?.length ? R.experiments.map((e) => `### ${anchor(e.id)}${e.id}. ${md(e.title)}
 
 - Measure: ${md(e.measure)}
 - Timebox: ${md(e.timebox)}
 - Decision rule: ${md(e.decisionRule)}
-- Status: ${e.status ?? "planned"}
+- Status: ${label(e.status)}
 - Links: ${refs(e.links) || "none"}`).join("\n\n") : noneNote("experiments")}
 `;
 
 	files["REQUIREMENTS.md"] = head(state, meta, "requirements", "Requirements with observable acceptance criteria, their personas, decisions and edge cases.") + `
-${R.requirements?.length ? R.requirements.map((q) => `## ${anchor(q.id)}${q.id}. ${q.title}
+${R.requirements?.length ? R.requirements.map((q) => `## ${anchor(q.id)}${q.id}. ${md(q.title)}
 
-Priority ${q.priority ?? "unspecified"}. Status ${q.status ?? "unspecified"}.
+Priority ${label(q.priority)}. Status ${label(q.status)}.
 
 Outcome: ${md(q.outcome)}
 
@@ -218,15 +229,15 @@ ${md(rationale(state, "when", "cut-line"))}
 
 ## Tasks
 
-${R.tasks?.length ? R.tasks.map((t) => `- [ ] ${anchor(t.id)}**${t.id}** ${t.title}. Milestone: ${md(t.milestone)}. Verify: ${md(t.verification)}. Links: ${refs(t.links) || "none"}.`).join("\n") : noneNote("tasks")}
+${R.tasks?.length ? R.tasks.map((t) => `- [ ] ${anchor(t.id)}**${t.id}** ${md(t.title)}. Milestone: ${md(t.milestone)}. Verify: ${md(t.verification)}. Links: ${refs(t.links) || "none"}.`).join("\n") : noneNote("tasks")}
 `;
 
 	files["RISKS-AND-ASSUMPTIONS.md"] = head(state, meta, "risks and assumptions", "Blockers, assumptions, evidence gaps and the validation tasks that close them.") + `
 ## Risks
 
-${R.risks?.length ? R.risks.map((r) => `### ${anchor(r.id)}${r.id}. ${r.title}
+${R.risks?.length ? R.risks.map((r) => `### ${anchor(r.id)}${r.id}. ${md(r.title)}
 
-Severity ${r.severity ?? "unspecified"}. Status ${r.status ?? "open"}.
+Severity ${label(r.severity)}. Status ${label(r.status)}.
 
 - Mitigation: ${md(r.mitigation)}
 - Remaining exposure: ${md(r.exposure)}
@@ -234,9 +245,9 @@ Severity ${r.severity ?? "unspecified"}. Status ${r.status ?? "open"}.
 
 ## Assumptions
 
-${R.assumptions?.length ? R.assumptions.map((a) => `### ${anchor(a.id)}${a.id}. ${a.title}
+${R.assumptions?.length ? R.assumptions.map((a) => `### ${anchor(a.id)}${a.id}. ${md(a.title)}
 
-Status ${a.status ?? "untested"}. If false: ${md(a.implication)}. Links: ${refs(a.links) || "none"}.`).join("\n\n") : noneNote("assumptions")}
+Status ${label(a.status)}. If false: ${md(a.implication).replace(/\\?\.$/, "")}. Links: ${refs(a.links) || "none"}.`).join("\n\n") : noneNote("assumptions")}
 
 ## Evidence gaps
 
@@ -244,12 +255,12 @@ ${WS.flatMap((w) => state.ws[w.key].ratings.filter((x) => x.evidence === "unknow
 `;
 
 	files["DECISIONS.md"] = head(state, meta, "decisions", "Accepted, proposed, deferred, rejected and superseded decisions with rationale. Append new consequential decisions as proposed.") + `
-${R.decisions?.length ? R.decisions.map((x) => `## ${anchor(x.id)}${x.id}. ${x.title}
+${R.decisions?.length ? R.decisions.map((x) => `## ${anchor(x.id)}${x.id}. ${md(x.title)}
 
-Status **${x.status}**. Evidence ${x.evidence ?? "unknown"}.
+Status **${x.status}**. Evidence ${label(x.evidence)}.
 
 ${md(x.rationale)}
-${x.alternatives?.length ? `\nAlternatives considered: ${x.alternatives.join("; ")}.` : ""}
+${x.alternatives?.length ? `\nAlternatives considered: ${x.alternatives.map(md).join("; ")}.` : ""}
 ${x.affects?.length ? `\nAffects: ${refs(x.affects)}.` : ""}`).join("\n\n") : noneNote("decisions")}
 `;
 
@@ -257,7 +268,7 @@ ${x.affects?.length ? `\nAffects: ${refs(x.affects)}.` : ""}`).join("\n\n") : no
 	files["AGENT-RULES.md"] = head(state, meta, "agent rules", "Guardrails for the coding agent. Keep this file in context while implementing. Your project's root rules file may point here; 6W never writes that file itself.") + `
 ## Locked decisions
 
-${(R.decisions ?? []).filter((x) => x.status === "accepted").map((x) => `- ${x.title} (${ref(x.id)})`).join("\n") || noneNote("accepted decisions")}
+${(R.decisions ?? []).filter((x) => x.status === "accepted").map((x) => `- ${md(x.title)} (${ref(x.id)})`).join("\n") || noneNote("accepted decisions")}
 
 ## Form factor and integrations
 
@@ -270,7 +281,7 @@ ${anti || noneNote("anti-scope")}
 
 ## Mandatory edge-case handling
 
-${R.edges?.filter((e) => e.scopeDecision === "support-now").map((e) => `- ${ref(e.id)} ${e.title}: ${md(e.response)}`).join("\n") || noneNote("edge cases")}
+${R.edges?.filter((e) => e.scopeDecision === "support-now").map((e) => `- ${ref(e.id)} ${md(e.title)}: ${md(e.response)}`).join("\n") || noneNote("edge cases")}
 
 ## Working rules
 

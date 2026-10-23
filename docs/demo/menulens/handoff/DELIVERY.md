@@ -1,22 +1,22 @@
 # MenuLens: delivery
 
-<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
+<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
 
 Milestones, capacity, the ordered task checklist and how each task is verified.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.3 | `sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
+| `menulens` | 0.0.3 | `sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
 
 ## Capacity and dates
 
-Solo builder, about 15 hours a week (weeknights and one weekend day) for six weeks until departure. Comfortable with web frontends and a small Node server. No budget beyond model calls and a 20 USD hosting plan.
+Solo builder, about 15 hours a week \(weeknights and one weekend day\) for six weeks until departure. Comfortable with web frontends and a small Node server. No budget beyond model calls and a 20 USD hosting plan.
 
 MVP by the end of week five, one week of buffer before departure. Done means REQ-001 to REQ-004 pass their acceptance criteria on the builder's phone and two allergy travelers from r/Celiac have used it on a real menu photo.
 
 ## Cut line
 
-Behind by the end of week three: drop the offline cache (REQ-004) first, then the confirmation card (REQ-003). Never drop the allergen flags. Timing matters because the trip is the first real test and the next one is months away.
+Behind by the end of week three: drop the offline cache \(REQ-004\) first, then the confirmation card \(REQ-003\). Never drop the allergen flags. Timing matters because the trip is the first real test and the next one is months away.
 
 ## Tasks
 

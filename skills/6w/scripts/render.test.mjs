@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderHtml, stateHash, esc } from "./render.mjs";
+import { renderHtml, stateHash, esc, CSP } from "./render.mjs";
+import { createHash } from "node:crypto";
 import { buildBundle, HTML_NAME } from "./export.mjs";
 import { loadDiagrams } from "./diagrams.mjs";
 import { DEMO_GENERATED_AT } from "../../../scripts/build-demo.mjs";
@@ -50,12 +51,15 @@ test("empty collections render an explicit status note instead of invented conte
 	assert.doesNotMatch(html, /Allergy traveler/);
 });
 
-test("the state hash ignores updatedAt and export metadata but changes with content", () => {
+test("the state hash ignores updatedAt, revision, extensions, export metadata and key order, but changes with content", () => {
 	const a = load("menulens-complete");
 	const b = load("menulens-complete");
 	b.metadata.updatedAt = "2099-01-01T00:00:00Z";
+	b.metadata.revision = 7;
 	b.export = { files: ["x"] };
-	assert.equal(stateHash(a), stateHash(b));
+	b.extensions = { later: true };
+	const reordered = Object.fromEntries(Object.entries(b).reverse());
+	assert.equal(stateHash(a), stateHash(reordered));
 	b.ws.why.summary += "!";
 	assert.notEqual(stateHash(a), stateHash(b));
 	assert.match(stateHash(a), /^sha256:[0-9a-f]{64}$/);
@@ -76,6 +80,17 @@ test("the committed demo page and handoff are the current export of the complete
 		const name = path.split("/").pop();
 		assert.equal(readFileSync(join(demo, "handoff", name), "utf8"), content, `demo handoff ${name} is stale; run: node scripts/build-demo.mjs`);
 	}
+});
+
+test("the page carries a Content Security Policy that allows only the inline search script", () => {
+	const html = renderHtml(load("menulens-complete"), { generatedAt: "2026-01-01T00:00:00Z" });
+	const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)?.[1];
+	assert.equal(csp, CSP);
+	assert.match(csp, /default-src 'none'/);
+	const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+	const hash = createHash("sha256").update(script).digest("base64");
+	assert.ok(csp.includes(`'sha256-${hash}'`), "the policy hash matches the script that is actually inlined");
+	assert.doesNotMatch(csp, /unsafe-eval|https?:/);
 });
 
 test("esc covers the five HTML special characters", () => {

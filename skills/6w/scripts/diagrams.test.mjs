@@ -38,17 +38,55 @@ test("fallback SVGs are self-contained, escaped, and come with a text descriptio
 	assert.match(erd.description, /No data entities/);
 });
 
-test("sanitizeSvg strips scripts, handlers and external hrefs, and rejects external resources", () => {
-	const dirty = `<html><body><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" onload="alert(1)"><script>alert(2)</script><a href="https://evil.example"><rect width="1" height="1" onclick="x()"/></a><use href="#ok"/></svg></body></html>`;
-	const { svg, problems } = sanitizeSvg(dirty);
-	assert.deepEqual(problems, []);
-	assert.doesNotMatch(svg, /<script|onload|onclick|evil\.example/);
-	assert.match(svg, /<use href="#ok"\/>/);
-	const external = `<svg xmlns="http://www.w3.org/2000/svg"><image href="https://x/y.png"/></svg>`;
-	assert.equal(sanitizeSvg(external).svg, null);
-	const css = `<svg xmlns="http://www.w3.org/2000/svg"><style>text{font-family:url(https://fonts.example/f.woff)}</style></svg>`;
-	assert.equal(sanitizeSvg(css).svg, null);
-	assert.equal(sanitizeSvg("<p>no svg</p>").svg, null);
+test("sanitizeSvg accepts a clean diagram unchanged and rejects every known bypass", () => {
+	const clean = `<html><body><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><defs><marker id="m"><path d="M0 0"/></marker></defs><g><rect width="1" height="1" fill="#fff" marker-end="url(#m)"/><use href="#m"/><text>a &amp; b &apos;c&apos;</text><svg viewBox="0 0 1 1"><circle r="1"/></svg></g></svg></body></html>`;
+	const ok = sanitizeSvg(clean);
+	assert.deepEqual(ok.problems, []);
+	assert.ok(ok.svg.startsWith("<svg") && ok.svg.endsWith("</svg>"));
+	assert.match(ok.svg, /<circle r="1"\/><\/svg><\/g><\/svg>$/, "nested svg is closed at the right depth");
+
+	const vectors = {
+		"handler after slash": `<svg/onload=alert(1)></svg>`,
+		"handler without space": `<svg><rect x="1"onclick="alert(1)"/></svg>`,
+		"script": `<svg><script>alert(1)</script></svg>`,
+		"script end tag with space": `<svg><script>alert(1)</script ></svg>`,
+		"self-closing script": `<svg><script href='data:text/javascript,alert(1)'/></svg>`,
+		"entity-encoded javascript": `<svg><a href='jav&#x61;script:alert(1)'><rect/></a></svg>`,
+		"unquoted encoded href": `<svg><a href=&#106;avascript:alert(1)><rect/></a></svg>`,
+		"xlink href with spaces": `<svg><a xlink:href = 'javascript:alert(1)'><rect/></a></svg>`,
+		"smil animation": `<svg><set attributeName="href" to="javascript:alert(1)"/></svg>`,
+		"img breakout": `<svg><img src="https://evil"onerror="alert(1)"></svg>`,
+		"style import": `<svg><style>@import "https://evil/x.css";</style></svg>`,
+		"style url escape": `<svg><rect style="fill:url(ht\\74ps://evil)"/></svg>`,
+		"style attr url": `<svg><rect style="fill:url(&quot;https://evil&quot;)"/></svg>`,
+		"foreignObject": `<svg><foreignObject><div>x</div></foreignObject ></svg>`,
+		"global style": `<svg><style>body{display:none}</style></svg>`,
+		"nested unclosed": `<svg><svg></svg><script>alert(1)</script></svg>`,
+		"external image": `<svg><image href="https://x/y.png"/></svg>`,
+		"external use": `<svg><use href="https://x/y.svg#a"/></svg>`,
+		"comment": `<svg><!-- --><rect/></svg>`,
+		"cdata": `<svg><![CDATA[x]]></svg>`,
+		"numeric entity in text": `<svg><text>&#x3c;script&#x3e;</text></svg>`,
+		"unclosed svg": `<svg><rect/>`,
+		"no svg": `<p>no svg</p>`,
+	};
+	for (const [name, input] of Object.entries(vectors)) {
+		const r = sanitizeSvg(input);
+		assert.equal(r.svg, null, `${name} must be rejected`);
+		assert.ok(r.problems.length > 0, `${name} names a problem`);
+	}
+});
+
+test("every fallback SVG passes the sanitizer unchanged, even with hostile text in state", () => {
+	const state = load("menulens-complete");
+	state.ws.why.summary = `<script>x</script> & "q" 'a' <img src=x>`;
+	const spec = diagramSpec(state);
+	for (const t of ["workflow", "architecture", "sequence"]) {
+		const { svg } = fallbackSvg(t, spec);
+		const r = sanitizeSvg(svg);
+		assert.deepEqual(r.problems, [], `${t}: ${r.problems.join("; ")}`);
+		assert.equal(r.svg, svg);
+	}
 });
 
 test("detectArchify honors ARCHIFY_BIN and the known install paths, and returns null otherwise", () => {
@@ -59,18 +97,20 @@ test("detectArchify honors ARCHIFY_BIN and the known install paths, and returns 
 	assert.equal(detectArchify({ env: { ARCHIFY_BIN: fake }, home: dir }), fake);
 });
 
-test("loadDiagrams prefers a clean archify output, falls back on a rejected one, and labels the source", () => {
+test("loadDiagrams prefers a clean archify output, falls back on a rejected one, labels the source, and ignores an ERD when state has no entities", () => {
 	const state = load("menulens-complete");
 	const dir = mkdtempSync(join(tmpdir(), "6w-diag-"));
 	writeFileSync(join(dir, "workflow.html"), `<html><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect id="from-archify"/></svg></html>`);
 	writeFileSync(join(dir, "sequence.svg"), `<svg xmlns="http://www.w3.org/2000/svg"><image href="https://x/y.png"/></svg>`);
+	writeFileSync(join(dir, "erd.html"), `<html><svg xmlns="http://www.w3.org/2000/svg"><rect id="invented-table"/></svg></html>`);
 	const d = loadDiagrams(state, { dir });
 	assert.equal(d.workflow.source, "archify");
 	assert.match(d.workflow.svg, /from-archify/);
 	assert.equal(d.sequence.source, "fallback");
-	assert.match(d.sequence.rejected, /embedded external resource/);
+	assert.match(d.sequence.rejected, /not allowed/);
 	assert.equal(d.architecture.source, "fallback");
 	assert.equal(d.erd.source, "none");
+	assert.equal(d.erd.svg, null, "an archify ERD is ignored while state records no entities");
 	const none = loadDiagrams(state);
 	for (const t of DIAGRAM_TYPES) assert.ok(none[t].description);
 });

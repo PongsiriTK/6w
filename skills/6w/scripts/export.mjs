@@ -8,7 +8,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, renameSync, rmSync, existsSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { join, dirname } from "node:path";
+import { join, dirname, posix } from "node:path";
 import { isMainModule } from "./scoring.mjs";
 import { validateState, validateExportManifest } from "./validate.mjs";
 import { renderHtml, stateHash } from "./render.mjs";
@@ -17,7 +17,7 @@ import { loadDiagrams } from "./diagrams.mjs";
 
 export const BLUEPRINT_VERSION = "0.0.3";
 export const HTML_NAME = "6w-blueprint.html";
-export const HANDOFF_DIR = join(".6w", "handoff");
+export const HANDOFF_DIR = posix.join(".6w", "handoff");
 export const MANIFEST_NAME = "export-manifest.json";
 
 const sha = (s) => createHash("sha256").update(s).digest("hex");
@@ -28,12 +28,12 @@ export function buildBundle(state, { generatedAt = new Date().toISOString(), blu
 	const hash = stateHash(state);
 	const diagrams = loadDiagrams(state, { dir: diagramsDir });
 	const files = new Map();
-	files.set(HTML_NAME, renderHtml(state, { generatedAt, blueprintVersion, diagrams }));
+	files.set(HTML_NAME, renderHtml(state, { generatedAt, blueprintVersion, diagrams, hash }));
 	const md = renderHandoff(state, { generatedAt, blueprintVersion, hash, diagrams });
 	for (const name of HANDOFF_FILES) {
 		if (!md[name] || md[name].trim().length < 50) throw new Error(`${name}: empty render`);
 		if (!md[name].includes(hash)) throw new Error(`${name}: missing state hash`);
-		files.set(join(HANDOFF_DIR, name), md[name]);
+		files.set(posix.join(HANDOFF_DIR, name), md[name]);
 	}
 	const manifest = {
 		schemaVersion: "0.1",
@@ -47,30 +47,59 @@ export function buildBundle(state, { generatedAt = new Date().toISOString(), blu
 	};
 	const mp = validateExportManifest(manifest);
 	if (mp.length) throw Object.assign(new Error("invalid manifest"), { problems: mp });
-	files.set(join(HANDOFF_DIR, MANIFEST_NAME), JSON.stringify(manifest, null, 2) + "\n");
+	files.set(posix.join(HANDOFF_DIR, MANIFEST_NAME), JSON.stringify(manifest, null, 2) + "\n");
 	return { files, manifest, hash };
+}
+
+// If an earlier export died between its two swaps, the live copy may be missing while the
+// .prev copy survives. Put it back before doing anything else.
+export function recoverBundle(projectRoot) {
+	const restored = [];
+	for (const [live, prev] of [[join(projectRoot, HANDOFF_DIR), join(projectRoot, `${HANDOFF_DIR}.prev`)], [join(projectRoot, HTML_NAME), join(projectRoot, `${HTML_NAME}.prev`)]]) {
+		if (!existsSync(live) && existsSync(prev)) {
+			renameSync(prev, live);
+			restored.push(live);
+		}
+	}
+	return restored;
 }
 
 export function exportBundle(state, projectRoot, opts = {}) {
 	const { files, manifest, hash } = buildBundle(state, opts);
+	recoverBundle(projectRoot);
 	const tmp = join(projectRoot, ".6w", `.export-${process.pid}-${Date.now()}`);
 	mkdirSync(tmp, { recursive: true });
+	const handoffLive = join(projectRoot, HANDOFF_DIR);
+	const handoffPrev = `${handoffLive}.prev`;
+	const htmlLive = join(projectRoot, HTML_NAME);
+	const htmlPrev = `${htmlLive}.prev`;
+	const moved = { handoff: false, html: false, newHandoff: false, newHtml: false };
 	try {
 		for (const [path, content] of files) {
-			mkdirSync(dirname(join(tmp, path)), { recursive: true });
-			writeFileSync(join(tmp, path), content);
+			const abs = join(tmp, ...path.split("/"));
+			mkdirSync(dirname(abs), { recursive: true });
+			writeFileSync(abs, content);
 		}
 		for (const [path, content] of files) {
-			if (readFileSync(join(tmp, path), "utf8") !== content) throw new Error(`${path}: readback mismatch`);
+			if (readFileSync(join(tmp, ...path.split("/")), "utf8") !== content) throw new Error(`${path}: readback mismatch`);
 		}
-		const handoffDst = join(projectRoot, HANDOFF_DIR);
-		const prev = `${handoffDst}.prev`;
-		mkdirSync(dirname(handoffDst), { recursive: true });
-		if (existsSync(prev)) rmSync(prev, { recursive: true, force: true });
-		if (existsSync(handoffDst)) renameSync(handoffDst, prev);
-		renameSync(join(tmp, HANDOFF_DIR), handoffDst);
-		renameSync(join(tmp, HTML_NAME), join(projectRoot, HTML_NAME));
-		if (existsSync(prev)) rmSync(prev, { recursive: true, force: true });
+		mkdirSync(dirname(handoffLive), { recursive: true });
+		for (const p of [handoffPrev, htmlPrev]) if (existsSync(p)) rmSync(p, { recursive: true, force: true });
+		try {
+			if (existsSync(handoffLive)) { renameSync(handoffLive, handoffPrev); moved.handoff = true; }
+			if (existsSync(htmlLive)) { renameSync(htmlLive, htmlPrev); moved.html = true; }
+			renameSync(join(tmp, ...HANDOFF_DIR.split("/")), handoffLive); moved.newHandoff = true;
+			renameSync(join(tmp, HTML_NAME), htmlLive); moved.newHtml = true;
+			const check = bundleIsConsistent(projectRoot);
+			if (!check.ok) throw Object.assign(new Error("exported bundle failed its consistency check"), { problems: check.problems });
+		} catch (err) {
+			if (moved.newHtml) rmSync(htmlLive, { recursive: true, force: true });
+			if (moved.newHandoff) rmSync(handoffLive, { recursive: true, force: true });
+			if (moved.html) renameSync(htmlPrev, htmlLive);
+			if (moved.handoff) renameSync(handoffPrev, handoffLive);
+			throw err;
+		}
+		for (const p of [handoffPrev, htmlPrev]) if (existsSync(p)) rmSync(p, { recursive: true, force: true });
 	} finally {
 		rmSync(tmp, { recursive: true, force: true });
 	}
@@ -78,12 +107,18 @@ export function exportBundle(state, projectRoot, opts = {}) {
 }
 
 export function bundleIsConsistent(projectRoot) {
-	const manifestPath = join(projectRoot, HANDOFF_DIR, MANIFEST_NAME);
+	const manifestPath = join(projectRoot, ...HANDOFF_DIR.split("/"), MANIFEST_NAME);
 	if (!existsSync(manifestPath)) return { ok: false, problems: ["no manifest"] };
-	const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+	let manifest;
+	try {
+		manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+	} catch (err) {
+		return { ok: false, problems: [`manifest is not valid JSON (${err.message})`] };
+	}
 	const problems = validateExportManifest(manifest);
+	if (problems.length) return { ok: false, problems, manifest };
 	for (const f of manifest.files) {
-		const p = join(projectRoot, f.path);
+		const p = join(projectRoot, ...f.path.split("/"));
 		if (!existsSync(p)) problems.push(`${f.path}: missing`);
 		else if (sha(readFileSync(p, "utf8")) !== f.sha256) problems.push(`${f.path}: content differs from the manifest`);
 	}
@@ -92,7 +127,8 @@ export function bundleIsConsistent(projectRoot) {
 		const h = readFileSync(html, "utf8").match(/name="6w-state-hash" content="([^"]+)"/)?.[1];
 		if (h !== manifest.stateHash) problems.push(`${HTML_NAME}: state hash ${h} differs from manifest ${manifest.stateHash}`);
 	}
-	const extra = existsSync(join(projectRoot, HANDOFF_DIR)) ? readdirSync(join(projectRoot, HANDOFF_DIR)).filter((n) => n !== MANIFEST_NAME && !manifest.files.some((f) => f.path.endsWith(n))) : [];
+	const handoffDir = join(projectRoot, ...HANDOFF_DIR.split("/"));
+	const extra = existsSync(handoffDir) ? readdirSync(handoffDir).filter((n) => n !== MANIFEST_NAME && !manifest.files.some((f) => f.path.endsWith(`/${n}`))) : [];
 	for (const n of extra) problems.push(`${HANDOFF_DIR}/${n}: not in the manifest`);
 	return { ok: problems.length === 0, problems, manifest };
 }

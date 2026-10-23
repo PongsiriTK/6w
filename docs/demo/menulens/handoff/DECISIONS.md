@@ -1,12 +1,12 @@
 # MenuLens: decisions
 
-<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
+<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
 
 Accepted, proposed, deferred, rejected and superseded decisions with rationale. Append new consequential decisions as proposed.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.3 | `sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
+| `menulens` | 0.0.3 | `sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
 
 ## <a id="dec-001"></a>DEC-001. Mobile web app first, native deferred
 

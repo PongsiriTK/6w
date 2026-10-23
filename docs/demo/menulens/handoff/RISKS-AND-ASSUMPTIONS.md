@@ -1,12 +1,12 @@
 # MenuLens: risks and assumptions
 
-<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
+<!-- 6W handoff. project menulens. blueprint 0.0.3. state sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.1. -->
 
 Blockers, assumptions, evidence gaps and the validation tasks that close them.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.3 | `sha256:b02794c8826e8e15b9f7126599c19e49a42558e6823df682df2e891342b696ac` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
+| `menulens` | 0.0.3 | `sha256:c1c84c716c1070c38594bd0e6f45c9fb40e4884a1fe98cc959fd263f7eabbc0d` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.1 |
 
 ## Risks
 
@@ -38,11 +38,11 @@ Severity medium. Status open.
 
 ### <a id="asm-001"></a>ASM-001. Allergy travelers will pay 4.99 USD for a trip pass
 
-Status untested. If false: If false, the yearly option or a free tier with a scan limit is the fallback.. Links: [DEC-004](DECISIONS.md#dec-004), [EXP-001](MARKETING.md#exp-001).
+Status untested. If false: If false, the yearly option or a free tier with a scan limit is the fallback. Links: [DEC-004](DECISIONS.md#dec-004), [EXP-001](MARKETING.md#exp-001).
 
 ### <a id="asm-002"></a>ASM-002. One scan costs about 0.012 USD and a trip takes about 12 scans
 
-Status untested. If false: If cost is 5 times higher the trip pass still covers it. Pricing is provisional and dated 2026-10.. Links: [RISK-003](RISKS-AND-ASSUMPTIONS.md#risk-003), [EXP-002](MARKETING.md#exp-002).
+Status untested. If false: If cost is 5 times higher the trip pass still covers it. Pricing is provisional and dated 2026-10. Links: [RISK-003](RISKS-AND-ASSUMPTIONS.md#risk-003), [EXP-002](MARKETING.md#exp-002).
 
 ## Evidence gaps
 

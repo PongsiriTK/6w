@@ -44,7 +44,7 @@ function typeOf(v) {
 	return typeof v;
 }
 
-function resolveRef(root, ref) {
+export function resolveRef(root, ref) {
 	if (!ref.startsWith("#/")) throw new Error(`unsupported $ref ${ref}: only local #/ references are implemented`);
 	const target = ref.slice(2).split("/").reduce((o, k) => (o == null ? undefined : o[k]), root);
 	if (!target) throw new Error(`$ref ${ref} does not resolve`);

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, writeFileSync, mkdtempSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync, existsSync, utimesSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
@@ -26,18 +26,34 @@ test("loadState validates and reports revision 0 for a file without one", () => 
 	assert.throws(() => loadState(tmpFile(bad)), (e) => e instanceof StateError && e.problems.some((p) => p.includes("rating")));
 });
 
-test("saveState bumps the revision, stamps updatedAt, recomputes scores and writes atomically", () => {
+test("saveState bumps the revision, stamps updatedAt, recomputes scores, checkpoints the previous file and writes atomically", () => {
 	const file = tmpFile(load("menulens-partial"));
+	const before = readFileSync(file, "utf8");
 	const { state } = loadState(file);
 	state.ws.who.ratings[0].rating = 4;
 	state.ws.who.caps[0].active = false;
-	const rev = saveState(file, state, { expectedRevision: 0, now: "2026-10-24T00:00:00Z" });
-	assert.equal(rev, 1);
+	const rev = saveState(file, state, { now: "2026-10-24T00:00:00Z" });
+	assert.equal(rev, 1, "expected revision defaults to the one the state was loaded with");
 	const saved = JSON.parse(readFileSync(file, "utf8"));
 	assert.equal(saved.metadata.revision, 1);
 	assert.equal(saved.metadata.updatedAt, "2026-10-24T00:00:00Z");
 	assert.equal(saved.ws.who.score, 36, "score recomputed on save: 30 + 6.25 + 0 + 0 = 36.25");
-	assert.ok(!existsSync(`${file}.tmp`));
+	const cps = readdirSync(join(dirname(file), "checkpoints"));
+	assert.deepEqual(cps, ["2026-10-24T00-00-00-000Z-rev000000.json"]);
+	assert.equal(readFileSync(join(dirname(file), "checkpoints", cps[0]), "utf8"), before, "the checkpoint is the previous file, byte for byte");
+	assert.ok(!readdirSync(dirname(file)).some((n) => n.endsWith(".tmp") || n.endsWith(".lock")));
+});
+
+test("saveState refuses while another save holds the lock, and clears a stale lock", () => {
+	const file = tmpFile(load("menulens-partial"));
+	const { state } = loadState(file);
+	writeFileSync(`${file}.lock`, "12345");
+	assert.throws(() => saveState(file, state), /another save holds/);
+	assert.equal(JSON.parse(readFileSync(file, "utf8")).metadata.revision ?? 0, 0);
+	const old = (Date.now() - 120_000) / 1000;
+	utimesSync(`${file}.lock`, old, old);
+	assert.equal(saveState(file, state), 1, "a lock older than 30 seconds is treated as abandoned");
+	assert.ok(!existsSync(`${file}.lock`));
 });
 
 test("saveState refuses to overwrite a revision the caller did not load", () => {
@@ -58,25 +74,29 @@ test("saveState refuses an invalid state and leaves the file untouched", () => {
 	assert.equal(readFileSync(file, "utf8"), before);
 });
 
-test("checkpoint copies the file, names it by time and revision, and keeps only the last N", () => {
+test("checkpoint copies the file, names it by UTC time and zero-padded revision, prunes only checkpoint files, and keeps the last N", () => {
 	const file = tmpFile(load("menulens-partial"));
 	const dir = join(dirname(file), "checkpoints");
-	for (let i = 0; i < 4; i++) checkpoint(file, { dir, keep: 3, now: `2026-10-24T00:00:0${i}.000Z` });
+	for (let i = 0; i < 4; i++) checkpoint(file, { dir, keep: 3, now: `2026-10-24T07:00:0${i}.000+07:00` });
+	writeFileSync(join(dir, "notes.json"), "{}");
+	checkpoint(file, { dir, keep: 3, now: "2026-10-24T00:00:09.000Z" });
 	const names = readdirSync(dir).sort();
-	assert.equal(names.length, 3);
-	assert.match(names[0], /^2026-10-24T00-00-01-000Z-rev0\.json$/);
+	assert.deepEqual(names, ["2026-10-24T00-00-02-000Z-rev000000.json", "2026-10-24T00-00-03-000Z-rev000000.json", "2026-10-24T00-00-09-000Z-rev000000.json", "notes.json"]);
 	assert.equal(readFileSync(join(dir, names[2]), "utf8"), readFileSync(file, "utf8"));
 });
 
-test("migrate moves unknown top-level and per-W fields into extensions and leaves known fields alone", () => {
+test("migrate parks unknown fields at any depth under their JSON path, never overwrites, and leaves known fields alone", () => {
 	const raw = load("menulens-partial");
 	raw.futureField = { a: 1 };
 	raw.ws.why.mood = "tense";
+	raw.metadata.extra = true;
+	raw.ws.when.ratings[0].note = "nested";
+	raw.extensions = { futureField: "ORIGINAL" };
 	const { state, moved } = migrate(raw);
-	assert.deepEqual(moved.sort(), ["futureField", "ws.why.mood"]);
-	assert.deepEqual(state.extensions, { futureField: { a: 1 } });
-	assert.deepEqual(state.ws.why.extensions, { mood: "tense" });
+	assert.deepEqual(moved.sort(), ["futureField", "metadata.extra", "ws.when.ratings[0].note", "ws.why.mood"]);
+	assert.deepEqual(state.extensions, { futureField: "ORIGINAL", "futureField~1": { a: 1 }, "ws.why.mood": "tense", "metadata.extra": true, "ws.when.ratings[0].note": "nested" });
 	assert.equal(state.futureField, undefined);
+	assert.equal(state.metadata.extra, undefined);
 	assert.equal(raw.futureField.a, 1, "input is not mutated");
 	assert.throws(() => migrate({ ...raw, schemaVersion: "0.2" }), /not one this version can migrate/);
 	assert.deepEqual(migrate(load("menulens-complete")).moved, []);
@@ -97,5 +117,5 @@ test("the CLI shows, checkpoints and migrates", () => {
 	assert.match(show2.stdout, /6W PRODUCT FOUNDATION/);
 	const cp = spawnSync("node", [script, "checkpoint", file], { encoding: "utf8" });
 	assert.equal(cp.status, 0, cp.stderr);
-	assert.match(cp.stdout, /checkpoint written: .*rev0\.json/);
+	assert.match(cp.stdout, /checkpoint written: .*rev000000\.json/);
 });

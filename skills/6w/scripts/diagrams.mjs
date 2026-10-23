@@ -16,7 +16,7 @@ import { isMainModule } from "./scoring.mjs";
 
 export const DIAGRAM_TYPES = ["workflow", "architecture", "sequence", "erd"];
 
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
 const short = (s, n = 80) => (String(s ?? "").length > n ? String(s).slice(0, n - 3).trimEnd() + "..." : String(s ?? ""));
 const rationale = (state, w, key) => state.ws[w].ratings.find((r) => r.criterion === key)?.rationale ?? "";
 const firstSentence = (s) => String(s ?? "").split(/(?<=[.!?])\s+/)[0];
@@ -93,20 +93,20 @@ function box(x, y, w, h, title, text, { dashed = false } = {}) {
 	const ty = y + (title ? 42 : 24);
 	return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="#fff" stroke="#111" stroke-width="3"${dashed ? ' stroke-dasharray="8 6"' : ""}/>${titleLine}${lines.map((l, i) => `<text x="${x + 12}" y="${ty + i * 17}" font-size="13" fill="#111" ${FONT}>${esc(l)}</text>`).join("")}`;
 }
-const ARROW = `<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#111"/></marker></defs>`;
-const line = (x1, y1, x2, y2, label) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111" stroke-width="3" stroke-linecap="round" marker-end="url(#a)"/>${label ? `<text x="${(x1 + x2) / 2}" y="${Math.min(y1, y2) - 8}" font-size="12" text-anchor="middle" fill="#333" ${FONT}>${esc(short(label, 40))}</text>` : ""}`;
-const svgOpen = (w, h, title) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="t-${title.replace(/\W+/g, "-")}"><title id="t-${title.replace(/\W+/g, "-")}">${esc(title)}</title>${ARROW}`;
+const arrowDefs = (t) => `<defs><marker id="arrow-${t}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#111"/></marker></defs>`;
+const line = (t, x1, y1, x2, y2, label) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow-${t})"/>${label ? `<text x="${(x1 + x2) / 2}" y="${Math.min(y1, y2) - 8}" font-size="12" text-anchor="middle" fill="#333" ${FONT}>${esc(short(label, 40))}</text>` : ""}`;
+const svgOpen = (t, w, h, title) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-labelledby="title-${t}"><title id="title-${t}">${esc(title)}</title>${arrowDefs(t)}`;
 
 export function fallbackSvg(type, spec) {
 	if (type === "workflow") {
 		const steps = spec.workflow.steps;
 		const w = 220, gap = 50, h = 150;
 		const total = steps.length * w + (steps.length - 1) * gap + 40;
-		let s = svgOpen(total, h + 40, spec.workflow.title);
+		let s = svgOpen("workflow", total, h + 40, spec.workflow.title);
 		steps.forEach((st, i) => {
 			const x = 20 + i * (w + gap);
 			s += box(x, 20, w, h, st.label, st.text);
-			if (i < steps.length - 1) s += line(x + w + 4, 20 + h / 2, x + w + gap - 4, 20 + h / 2);
+			if (i < steps.length - 1) s += line("workflow", x + w + 4, 20 + h / 2, x + w + gap - 4, 20 + h / 2);
 		});
 		return { svg: s + "</svg>", description: `Pitch flow: ${steps.map((st) => `${st.label}: ${st.text}`).join(". ")}.` };
 	}
@@ -115,14 +115,14 @@ export function fallbackSvg(type, spec) {
 		const col = 230, rowH = 96, gapY = 18;
 		const rows = Math.max(a.actors.length, 1, a.externals.length);
 		const H = 40 + rows * (rowH + gapY);
-		let s = svgOpen(3 * col + 2 * 90 + 40, H, a.title);
+		let s = svgOpen("architecture", 3 * col + 2 * 90 + 40, H, a.title);
 		const yFor = (i, n) => 20 + i * (rowH + gapY) + ((rows - n) * (rowH + gapY)) / 2;
 		a.actors.forEach((p, i) => (s += box(20, yFor(i, a.actors.length), col, rowH, "Actor", p.label)));
 		const sysY = yFor(0, 1);
 		s += box(20 + col + 90, sysY, col, rowH, "Product", a.system[0].text ? `${a.system[0].label}. ${a.system[0].text}` : a.system[0].label);
 		a.externals.forEach((e, i) => (s += box(20 + 2 * (col + 90), yFor(i, a.externals.length), col, rowH, "External", e.label)));
-		a.actors.forEach((p, i) => (s += line(20 + col + 4, yFor(i, a.actors.length) + rowH / 2, 20 + col + 86, sysY + rowH / 2)));
-		a.externals.forEach((e, i) => (s += line(20 + 2 * col + 94, sysY + rowH / 2, 20 + 2 * (col + 90) - 4, yFor(i, a.externals.length) + rowH / 2)));
+		a.actors.forEach((p, i) => (s += line("architecture", 20 + col + 4, yFor(i, a.actors.length) + rowH / 2, 20 + col + 86, sysY + rowH / 2)));
+		a.externals.forEach((e, i) => (s += line("architecture", 20 + 2 * col + 94, sysY + rowH / 2, 20 + 2 * (col + 90) - 4, yFor(i, a.externals.length) + rowH / 2)));
 		const desc = `${a.system[0].label} sits between ${a.actors.map((p) => p.label).join(", ") || "its users"} and ${a.externals.map((e) => e.label).join(", ") || "no external services"}.`;
 		return { svg: s + "</svg>", description: desc };
 	}
@@ -131,7 +131,7 @@ export function fallbackSvg(type, spec) {
 		const colW = 240, top = 70, stepH = 54, n = q.actors.length;
 		const branchH = q.branches.length ? 40 + q.branches.length * 44 : 0;
 		const H = top + q.steps.length * stepH + branchH + 40;
-		let s = svgOpen(n * colW + 40, H, q.title);
+		let s = svgOpen("sequence", n * colW + 40, H, q.title);
 		q.actors.forEach((name, i) => {
 			const x = 20 + i * colW + colW / 2;
 			s += `<rect x="${x - 100}" y="14" width="200" height="40" rx="10" fill="#fff" stroke="#111" stroke-width="3"/><text x="${x}" y="39" font-size="13" font-weight="700" text-anchor="middle" fill="#111" ${FONT}>${esc(short(name, 28))}</text><line x1="${x}" y1="54" x2="${x}" y2="${H - 20}" stroke="#999" stroke-width="2" stroke-dasharray="6 6"/>`;
@@ -139,8 +139,8 @@ export function fallbackSvg(type, spec) {
 		q.steps.forEach((st, i) => {
 			const y = top + i * stepH + 20;
 			const x1 = 20 + st.from * colW + colW / 2, x2 = 20 + st.to * colW + colW / 2;
-			if (st.from === st.to) s += `<path d="M${x1} ${y} h40 v22 h-36" fill="none" stroke="#111" stroke-width="3" marker-end="url(#a)"/><text x="${x1 + 48}" y="${y + 16}" font-size="12" fill="#333" ${FONT}>${esc(short(st.label, 40))}</text>`;
-			else s += line(x1, y, x2 + (x2 > x1 ? -6 : 6), y, st.label);
+			if (st.from === st.to) s += `<path d="M${x1} ${y} h40 v22 h-36" fill="none" stroke="#111" stroke-width="3" marker-end="url(#arrow-sequence)"/><text x="${x1 + 48}" y="${y + 16}" font-size="12" fill="#333" ${FONT}>${esc(short(st.label, 40))}</text>`;
+			else s += line("sequence", x1, y, x2 + (x2 > x1 ? -6 : 6), y, st.label);
 		});
 		if (q.branches.length) {
 			const y0 = top + q.steps.length * stepH + 10;
@@ -159,22 +159,62 @@ export function detectArchify({ env = process.env, home = homedir() } = {}) {
 	return candidates.find((p) => existsSync(p)) ?? null;
 }
 
-// Accepts an archify-rendered HTML file or a bare SVG. Returns the first inline <svg> with
-// scripts, foreignObject, event handlers and non-fragment hrefs removed. Any remaining
-// external reference is a problem and the result is rejected; the fallback is used instead.
+// Accepts an archify-rendered HTML file or a bare SVG and returns the first <svg> element
+// only if every tag, attribute and entity in it is on the allowlist below. Nothing is
+// stripped or repaired: one unknown element, attribute, entity, comment or href that is not
+// a fragment rejects the whole diagram, and the exporter uses the fallback instead.
+const ALLOWED_ELEMENTS = new Set(["svg", "g", "path", "rect", "circle", "ellipse", "line", "polyline", "polygon", "text", "tspan", "title", "desc", "defs", "marker", "use", "lineargradient", "radialgradient", "stop", "clippath", "symbol"]);
+const ALLOWED_ATTRS = new Set(["xmlns", "xmlns:xlink", "viewbox", "width", "height", "preserveaspectratio", "version", "xml:space", "lang", "id", "class", "role", "aria-label", "aria-labelledby", "aria-hidden", "fill", "fill-opacity", "fill-rule", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-dasharray", "stroke-dashoffset", "stroke-opacity", "stroke-miterlimit", "opacity", "transform", "d", "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "dx", "dy", "points", "font-family", "font-size", "font-weight", "font-style", "text-anchor", "dominant-baseline", "letter-spacing", "text-decoration", "textlength", "lengthadjust", "href", "xlink:href", "refx", "refy", "markerwidth", "markerheight", "markerunits", "orient", "marker-start", "marker-mid", "marker-end", "offset", "stop-color", "stop-opacity", "gradientunits", "gradienttransform", "spreadmethod", "clip-path", "clip-rule", "vector-effect", "paint-order", "shape-rendering", "text-rendering", "visibility", "display", "pointer-events"]);
+const URL_ATTRS = new Set(["marker-start", "marker-mid", "marker-end", "fill", "stroke", "clip-path"]);
+const TAG_RE = /<\/?([A-Za-z][\w:-]*)((?:\s+[^\s=\/>"'<]+(?:\s*=\s*(?:"[^"<]*"|'[^'<]*'|[^\s"'<>\/]+))?)*)\s*(\/?)>/y;
+const ATTR_RE = /\s+([^\s=\/>"'<]+)(?:\s*=\s*(?:"([^"<]*)"|'([^'<]*)'|([^\s"'<>\/]+)))?/g;
+const TEXT_OK = /^(?:[^&<>]|&(?:amp|lt|gt|quot|apos);)*$/;
+const FRAGMENT = /^#[A-Za-z][\w-]*$/;
+const URL_VALUE = /^(?:none|currentColor|#[0-9A-Fa-f]{3,8}|[A-Za-z]+|url\(#[A-Za-z][\w-]*\)(?:\s+[A-Za-z#0-9]+)?)$/;
+
 export function sanitizeSvg(input) {
-	const m = String(input).match(/<svg[\s\S]*?<\/svg>/i);
-	if (!m) return { svg: null, problems: ["no <svg> element found"] };
-	let svg = m[0];
+	const text = String(input);
+	const start = text.search(/<svg[\s>]/i);
+	if (start < 0) return { svg: null, problems: ["no <svg> element found"] };
 	const problems = [];
-	if (/<(?:image|use|iframe|embed|object)\b[^>]*\b(?:xlink:href|href|src)\s*=\s*(?:"(?!#)|'(?!#)|(?![#"']))/i.test(svg)) problems.push("embedded external resource");
-	if (/url\(\s*["']?\s*(?:https?:|\/\/|data:)/i.test(svg)) problems.push("external or data url() reference");
-	if (/javascript:/i.test(svg)) problems.push("javascript: URL");
+	let i = start;
+	let depth = 0;
+	let end = -1;
+	const stack = [];
+	while (i < text.length) {
+		const lt = text.indexOf("<", i);
+		if (lt < 0) break;
+		const chunk = text.slice(i, lt);
+		if (!TEXT_OK.test(chunk)) { problems.push(`text at ${i}: entity or stray character not allowed`); break; }
+		TAG_RE.lastIndex = lt;
+		const m = TAG_RE.exec(text);
+		if (!m) { problems.push(`tag at ${lt}: could not be parsed (comments, CDATA, doctype, processing instructions and malformed tags are rejected)`); break; }
+		const [whole, rawName, rawAttrs, selfClose] = m;
+		const name = rawName.toLowerCase();
+		const closing = whole.startsWith("</");
+		if (!ALLOWED_ELEMENTS.has(name)) { problems.push(`element <${rawName}> not allowed`); break; }
+		if (closing) {
+			if (stack.pop() !== name) { problems.push(`unbalanced </${rawName}>`); break; }
+			depth--;
+		} else {
+			for (const a of rawAttrs.matchAll(ATTR_RE)) {
+				const attr = a[1].toLowerCase();
+				const value = a[2] ?? a[3] ?? a[4] ?? "";
+				if (attr.startsWith("on") || !ALLOWED_ATTRS.has(attr)) { problems.push(`attribute ${a[1]} on <${rawName}> not allowed`); break; }
+				if (!TEXT_OK.test(value)) { problems.push(`attribute ${a[1]}: entity or stray character not allowed`); break; }
+				if ((attr === "href" || attr === "xlink:href") && !FRAGMENT.test(value)) { problems.push(`${a[1]} must be a fragment reference, got ${JSON.stringify(value)}`); break; }
+				if (URL_ATTRS.has(attr) && /url\(/i.test(value) && !URL_VALUE.test(value)) { problems.push(`${a[1]} may reference only a local id, got ${JSON.stringify(value)}`); break; }
+				if (/url\(|@|\\|expression|javascript|data:/i.test(value) && !URL_VALUE.test(value)) { problems.push(`attribute ${a[1]} contains a url, escape or script-like value`); break; }
+			}
+			if (problems.length) break;
+			if (!selfClose) { stack.push(name); depth++; }
+		}
+		i = lt + whole.length;
+		if (depth === 0 && stack.length === 0) { end = i; break; }
+	}
+	if (!problems.length && end < 0) problems.push("<svg> never closed");
 	if (problems.length) return { svg: null, problems };
-	svg = svg.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<foreignObject[\s\S]*?<\/foreignObject>/gi, "");
-	svg = svg.replace(/\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "");
-	svg = svg.replace(/\s+(xlink:href|href)\s*=\s*"(?!#)[^"]*"/gi, "");
-	return { svg, problems };
+	return { svg: text.slice(start, end), problems: [] };
 }
 
 export function writeDiagramSpecs(state, dir) {
@@ -196,7 +236,7 @@ export function loadDiagrams(state, { dir } = {}) {
 	const out = {};
 	for (const t of DIAGRAM_TYPES) {
 		let picked = null;
-		if (dir) {
+		if (dir && !(t === "erd" && spec.erd === null)) {
 			for (const ext of ["html", "svg"]) {
 				const f = join(dir, `${t}.${ext}`);
 				if (existsSync(f)) {

@@ -4,6 +4,17 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+### Fixed
+
+- The SVG sanitizer was a blocklist and could be bypassed (handlers after a slash, entity-encoded `javascript:`, CSS `@import`, nested `<svg>`, `<img>` breakout, SMIL). It is now an allowlist tokenizer that rejects any element, attribute, entity or non-fragment reference it does not recognize, and never strips. The HTML page also carries a Content Security Policy that allows only the inline search script and no network source.
+- `export.mjs` swapped the handoff and the HTML in two steps with no rollback. A failure now restores both previous copies, a crash between the steps is recovered on the next run, and the new bundle must pass its own consistency check before the previous one is removed.
+- `migrate` overwrote an existing `extensions` entry on a name collision and only looked two levels deep. It now walks the whole schema and parks every unknown field under its JSON path without overwriting.
+- Free text from state could inject headings, links, HTML and duplicate anchors into the Markdown handoff. Every state string is now escaped for Markdown, and missing statuses print as unspecified instead of an invented default.
+- `saveState` now holds a lock file, writes a unique fsynced temp file, defaults the expected revision to the one the state was loaded with, and checkpoints the previous file before replacing it.
+- The state hash is canonical: sorted keys, independent of `revision`, `updatedAt`, `extensions` and `export`.
+- An archify ERD is ignored while state records no entities, so the page cannot show tables the handoff says do not exist.
+- `scripts/build-demo.mjs` uses the shared main-module check and stages the new demo before replacing the old one.
+
 ## [0.0.3] - 2026-10-23
 
 ### Added
