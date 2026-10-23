@@ -9,7 +9,9 @@ This repository holds the 6W skill and its blueprint. Read [BLUEPRINT.md](BLUEPR
 | `BLUEPRINT.md` | The master specification. Every behavior rule, output contract and open decision lives here. |
 | `skills/6w/SKILL.md` | The portable skill. Hosts load this file. Keep it under 500 lines and keep every path it names real. |
 | `skills/6w/references/` | Material the skill reads on demand: the scoring rubric and later the persona, risk and stack references. |
-| `skills/6w/scripts/` | `rubric.mjs` holds the numbers, `score.mjs` computes scores and the scoreboard, `validate.mjs` checks a state file. Tests sit next to them as `*.test.mjs`. |
+| `skills/6w/scripts/` | `rubric.mjs` holds the numbers, `scoring.mjs` the pure functions, `score.mjs` the scoring CLI, `validate.mjs` checks a state file, `render.mjs` writes the HTML blueprint. Tests sit next to them as `*.test.mjs`. |
+| `skills/6w/templates/` | `blueprint.css`, inlined by `render.mjs`. |
+| `docs/demo/menulens/` | The rendered complete example, served by GitHub Pages. Regenerate with `render.mjs --generated-at <the meta value>` after changing the renderer or the example; a test fails when it is stale. |
 | `skills/6w/schemas/` | `state.schema.json` is the shape of `.6w/state.json`. Change it together with `validate.mjs` and both examples. |
 | `examples/` | The MenuLens demo states. Both must validate and their scores must match `score.mjs`. |
 | `docs/plans/` | Implementation plans. One file per plan, with phases, checklists and validation. |

@@ -243,17 +243,17 @@ Render this at the top of every walkthrough turn. ASCII only, so it survives eve
 
 ```text
 6W PRODUCT FOUNDATION                      gate 90   stage: build MVP   mode: quick
-overall 62/100  [############........]
+overall 61/100  [############........]
 
   W        score  status  evidence     note
-  WHY       94    OK      untested     Invoice reconciliation for boutique agencies
+  WHY       94    OK      assumption   Invoice reconciliation for boutique agencies
   WHO       91    OK      user         Agencies of 5 to 20 staff on Xero
-  WHAT      72    ..      assumption   No anti-scope list yet (cap 65 lifts when added)
+  WHAT      65    CAP     assumption   Seven features and no anti-scope list (capped at 65)
   WHICH     85    ..      assumption   Web dashboard plus Slack approval bot
   WHETHER   40    CAP     unknown      Paid OCR with no cost per active user
   WHEN      30    ..      unknown      Two weeks, not mapped to scope
 
-Focus: WHAT, 72/100. Needs +18.
+Focus: WHAT, 65/100. Needs +25.
 ```
 
 Status values: `OK` at or above threshold, `..` in progress, `CAP` a hard cap is active, `LOCKED` the user locked it below threshold.
@@ -323,9 +323,9 @@ The rubric reference gives W-specific and stage-specific examples for every rati
 
 ### 6.5 Evidence summary
 
-Levels: untested, indirect, direct, behaviorally validated. Show coverage and limitations, not just a label. Five interviews about a problem do not establish willingness to pay.
+The scoreboard shows one evidence word per W: the weakest evidence status among its four ratings, using the five statuses from section 5 (unknown, assumption, user, source, observed). The blueprint's readiness text adds coverage and limitations, not just the label. Five interviews about a problem do not establish willingness to pay.
 
-Example: "Why: 94/100 readiness. Evidence: untested. The problem and experiment are defined. Demand is unknown. Next step: test the problem hypothesis with target users."
+Example: "Why: 94/100 readiness. Evidence: assumption. The problem and experiment are defined. Demand is unknown. Next step: test the problem hypothesis with target users."
 
 ## 7. Audience and marketing deliverables
 
@@ -480,9 +480,9 @@ Node.js 18 or later, plain ES modules, no runtime dependencies. Scripts are invo
 
 The project-owned file `.6w/state.json` is the source of truth. HTML and Markdown are derived. State never lives inside the installed skill directory.
 
-Top-level records: metadata (project ID, title, language, timestamps, schema and rubric versions), session (mode, stage, focus, user overrides), capabilities, six Ws (answers, links, ratings, rationale, review status), claims and sources, decisions, audience and marketing, product and engineering, risk and delivery, export metadata (version, hash, files, validation results).
+Top-level records, as `skills/6w/schemas/state.schema.json` defines them: `schemaVersion` and `rubricVersion`, `metadata` (project ID, title, language, timestamps, maturity), `session` (mode, tone, stage, gate, phase, focus, turn count, user overrides), `capabilities`, `ws` (per W: a summary, four ratings each with rationale, evidence status and source links, caps with active flag and reason, open questions, links), `overall`, `records` (sources, personas, edges, decisions, requirements, risks, assumptions, experiments, tasks, each with a prefixed stable ID), `export` metadata, and `extensions` for fields a migration did not recognize. Claims live as ratings and records with evidence status rather than as a separate collection.
 
-Rules: save after accepted material changes and before export, write atomically and keep the last valid checkpoint, detect a changed revision before writing, reject invalid state with actionable diagnostics, migrate older schemas without dropping unknown fields, redact sensitive content before rendering and record the omission, and offer a readable checkpoint when the filesystem is unavailable.
+Rules: save after accepted material changes and before export, write atomically and keep the last valid checkpoint, detect a changed revision before writing, reject invalid state with actionable diagnostics, migrate older schemas and move unrecognized fields into `extensions` rather than dropping them, redact sensitive content before rendering and record the omission, and offer a readable checkpoint when the filesystem is unavailable.
 
 ### 11.4 Export consistency
 
@@ -516,6 +516,7 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 ├── package.json                 # `npm test` runs the gate; no dependencies
 ├── assets/logo/                 # 6w-mark.svg, 6w-mark-dark.svg, PNG, icon (archify lockups)
 ├── docs/
+│   ├── demo/menulens/           # rendered MenuLens blueprint, served by GitHub Pages
 │   ├── compatibility.md         # tested-host matrix
 │   ├── porting-to-a-new-host.md # how to add a host              (superpowers)
 │   ├── plans/                   # implementation plans, one file each
@@ -530,15 +531,18 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   │   ├── interview-examples.md      (planned)
 │   │   └── archify-bridge.md          (planned)
 │   ├── schemas/                 state.schema.json, export-manifest.schema.json
-│   ├── templates/               (planned) blueprint.html, handoff/*.md
+│   ├── templates/
+│   │   ├── blueprint.css        inlined into every rendered page
+│   │   └── handoff/             (planned) Markdown templates
 │   └── scripts/
 │       ├── rubric.mjs           weights, criteria and caps
-│       ├── score.mjs            scores, caps, scoreboard, --write
+│       ├── scoring.mjs          pure scoring functions, scoreboard text
+│       ├── score.mjs            CLI: scores, --write
 │       ├── validate.mjs         schema, rubric, links, score consistency
+│       ├── render.mjs           CLI: 6w-blueprint.html from one validated state
 │       ├── *.test.mjs           node --test suites next to the code (pstack)
 │       ├── state.mjs            (planned)
-│       ├── render.mjs           (planned)
-│       └── export.mjs           (planned)
+│       └── export.mjs           (planned) Markdown handoff, manifest, atomic bundle
 ├── examples/                    menulens-partial, menulens-complete, README.md
 └── tests/                       (planned) host checks and fixtures
 ```

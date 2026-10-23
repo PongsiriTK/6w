@@ -4,6 +4,22 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+### Added
+
+- `skills/6w/scripts/render.mjs` and `templates/blueprint.css`: the first HTML blueprint renderer. One offline file, inline CSS and SVG, escaped content, deterministic for a fixed timestamp.
+- Live demo of the complete MenuLens state at https://pongsiritk.github.io/6w/demo/menulens/ (GitHub Pages from `docs/`). A test fails when the page drifts from the state.
+- `scoring.mjs` holds the pure scoring functions; `score.mjs` is the CLI.
+- README flow diagram as an image generated with GPT Image 2.
+
+### Fixed
+
+- Main-module detection in the CLIs used a hand-built file URL and skipped `main()` under a symlinked install or a path with `#` or `%`, so `validate.mjs` could exit 0 without checking anything. Now compares real paths.
+- Schema validation could be bypassed with inherited property names such as `constructor`. Uses own-property checks.
+- The validator now refuses schema keywords it does not implement, checks the `persona` field on edge cases, rejects duplicate cap ids and active caps without a reason.
+- `score.mjs --write` validates first and writes atomically.
+- The repository gate resolves links relative to their file, checks HTML `src` and `srcset`, reference-style links and `~~~` fences, and requires every manifest in `.version-bump.json`.
+- The scoreboard examples in the blueprint, skill and README showed a capped W above its cap. Evidence vocabulary unified on the five statuses from section 5.
+
 ## [0.0.2] - 2026-10-23
 
 ### Added

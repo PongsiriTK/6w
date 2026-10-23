@@ -11,40 +11,29 @@
 
 ## Status
 
-This repository holds the master blueprint, the skill, its scoring and validation scripts, and a worked demo. The skill works today as a conversational guide, and the scripts make its scores deterministic. The HTML renderer, the Markdown export and the host tests are the next phases in `docs/plans/0001-v0.1-implementation.md`. No host is listed as tested in `docs/compatibility.md` yet.
+This repository holds the master blueprint, the skill, its scoring, validation and HTML rendering scripts, and a worked demo with a live rendered page. The skill works today as a conversational guide, the scripts make its scores deterministic, and the renderer produces the offline blueprint. The Markdown handoff export, the diagram adapter and the host tests are the next phases in `docs/plans/0001-v0.1-implementation.md`. No host is listed as tested in `docs/compatibility.md` yet.
 
 ## What it does
 
 You bring an idea, some notes, a brief or a repository. 6W reads it, drafts six decisions with their provenance, shows you a scoreboard, and asks one or two questions per turn with concrete options. You can skip, go deeper, change your mind, or finish at any time. Finishing early gives you an honest partial package, never an invented complete one.
 
-```mermaid
-flowchart LR
-    A["Idea, notes,<br/>brief or repo"] --> B["Ingest and rate<br/>all six Ws"]
-    B --> C{"Any W<br/>below the gate?"}
-    C -- yes --> D["Ask 1 or 2 questions<br/>with 3 options"]
-    D --> E["Record the answer,<br/>rescore"]
-    E --> C
-    C -- "no, or finish" --> F["Lock assumptions<br/>and risks"]
-    F --> G[(".6w/state.json")]
-    G --> H["6w-blueprint.html<br/>for people"]
-    G --> I[".6w/handoff/<br/>for the coding agent"]
-```
+<p align="center"><img src="assets/readme/flow.png" alt="Flow: idea, notes, brief or repo; ingest and rate all six Ws; while any W is below the gate, ask one or two questions with three options, record the answer and rescore; then lock assumptions and risks into .6w/state.json, which produces 6w-blueprint.html for people and .6w/handoff/ for the coding agent" width="900" /></p>
 
 Two outputs come from one state file:
 
-- `6w-blueprint.html`. One offline file for people. Readiness, canvas, persona and edge-case cards, marketing hypotheses, scope, unit economics, delivery plan, risks, stack options and diagrams. No CDN, readable without JavaScript, prints cleanly.
+- `6w-blueprint.html`. One offline file for people. Readiness, canvas, persona and edge-case cards, marketing hypotheses, scope, unit economics, delivery plan, risks, stack options and diagrams. No CDN, readable without JavaScript, prints cleanly. [See the MenuLens example](https://pongsiritk.github.io/6w/demo/menulens/).
 - `.6w/handoff/`. Token-dense Markdown for your coding agent. Requirements with acceptance criteria, architecture, an ordered task list, decisions, risks and a guardrail file.
 
 The scoreboard you see every turn:
 
 ```text
 6W PRODUCT FOUNDATION                      gate 90   stage: build MVP   mode: quick
-overall 62/100  [############........]
+overall 61/100  [############........]
 
   W        score  status  evidence     note
-  WHY       94    OK      untested     Invoice reconciliation for boutique agencies
+  WHY       94    OK      assumption   Invoice reconciliation for boutique agencies
   WHO       91    OK      user         Agencies of 5 to 20 staff on Xero
-  WHAT      72    ..      assumption   No anti-scope list yet (cap 65 lifts when added)
+  WHAT      65    CAP     assumption   Seven features and no anti-scope list (capped at 65)
   WHICH     85    ..      assumption   Web dashboard plus Slack approval bot
   WHETHER   40    CAP     unknown      Paid OCR with no cost per active user
   WHEN      30    ..      unknown      Two weeks, not mapped to scope
@@ -54,12 +43,17 @@ Each W is scored on four named sub-criteria. Hard caps stop a vague idea from sc
 
 ## Demo
 
-`examples/` holds a worked session on MenuLens, a menu scanner for travelers with food allergies. The naive version trips every hard cap. The refined version clears them in eleven turns. Both state files validate and their scores are produced by the scripts, so you can rerun them:
+**Open the rendered blueprint: [pongsiritk.github.io/6w/demo/menulens](https://pongsiritk.github.io/6w/demo/menulens/)**
+
+That page is `6w-blueprint.html` rendered by `skills/6w/scripts/render.mjs` from `examples/menulens-complete/state.json`. It is one file with inline CSS, no CDN, no font download, readable with JavaScript disabled, and it prints. A test fails if the page ever drifts from the state that produced it.
+
+`examples/` holds the worked session behind it: MenuLens, a menu scanner for travelers with food allergies. The naive version trips every hard cap. The refined version clears them in eleven turns. Both state files validate and their scores are produced by the scripts, so you can rerun them:
 
 ```bash
 node skills/6w/scripts/score.mjs examples/menulens-partial/state.json
 node skills/6w/scripts/score.mjs examples/menulens-complete/state.json
 node skills/6w/scripts/validate.mjs examples/menulens-complete/state.json
+node skills/6w/scripts/render.mjs examples/menulens-complete/state.json /tmp/6w-blueprint.html
 ```
 
 The session is synthetic, authored to exercise the rubric. `examples/README.md` has both scoreboards, the turn log and what the demo does and does not show.
@@ -105,7 +99,9 @@ Or, where the host supports commands, `/6w`, `/6w quick`, `/6w deep`, `/6w roast
 | `BLUEPRINT.md` | The master specification: framework, conversation design, rubric, outputs, system design, repository layout, acceptance criteria and open decisions |
 | `skills/6w/SKILL.md` | The portable skill every host loads |
 | `skills/6w/references/scoring-rubric.md` | Sub-criteria, anchors, caps and the formula |
-| `skills/6w/scripts/` | `score.mjs` computes scores and prints the scoreboard, `validate.mjs` checks a state file, `rubric.mjs` holds the numbers, tests next to them |
+| `skills/6w/scripts/` | `score.mjs` computes scores and prints the scoreboard, `validate.mjs` checks a state file, `render.mjs` produces the HTML blueprint, `rubric.mjs` holds the numbers, tests next to them |
+| `skills/6w/templates/` | `blueprint.css`, inlined into every rendered page |
+| `docs/demo/` | The rendered MenuLens blueprint served by GitHub Pages |
 | `skills/6w/schemas/` | JSON Schema for the state file and the export manifest |
 | `examples/` | The MenuLens demo: a naive state and a refined state |
 | `docs/plans/` | Implementation plans with checklists |

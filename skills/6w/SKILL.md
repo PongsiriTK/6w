@@ -79,8 +79,8 @@ Entered when the user finishes or any W is locked below the gate.
 ### Phase 3. HTML synthesis
 
 1. Run `node <skill-dir>/scripts/validate.mjs .6w/state.json`. Stop and report its output if it fails. It checks the schema, the rubric criteria, cap ids, every linked ID and score consistency.
-2. If archify is installed, send it the diagram payload from `BLUEPRINT.md` section 10.2 and request `architecture`, `sequence`, `erd` and `workflow`. Embed the inline SVG and a text description. If archify is absent, produce a simple inline SVG per diagram and the same text description. Never install archify yourself.
-3. Render `6w-blueprint.html` in the project root with the ten sections listed under Outputs. No CDN, no external font, no network fetch. Core content readable without JavaScript. Escape every imported string.
+2. Diagrams: the archify adapter and the SVG fallback are not built yet, and the rendered page says so in its Technical section. Do not paste diagrams into the HTML by hand. Never install archify yourself.
+3. Run `node <skill-dir>/scripts/render.mjs .6w/state.json 6w-blueprint.html`. It validates first, then writes one self-contained file with the sections listed under Outputs. No CDN, no external font, no network fetch. Core content readable without JavaScript. Every imported string is escaped. If Node is unavailable, say that the HTML export is unavailable on this host and offer the Markdown summary instead.
 4. Open or link the file.
 
 ### Phase 4. Markdown handoff
@@ -95,17 +95,17 @@ Render this at the top of every walkthrough turn. ASCII only.
 
 ```text
 6W PRODUCT FOUNDATION                      gate 90   stage: build MVP   mode: quick
-overall 62/100  [############........]
+overall 61/100  [############........]
 
   W        score  status  evidence     note
-  WHY       94    OK      untested     Invoice reconciliation for boutique agencies
+  WHY       94    OK      assumption   Invoice reconciliation for boutique agencies
   WHO       91    OK      user         Agencies of 5 to 20 staff on Xero
-  WHAT      72    ..      assumption   No anti-scope list yet (cap 65 lifts when added)
+  WHAT      65    CAP     assumption   Seven features and no anti-scope list (capped at 65)
   WHICH     85    ..      assumption   Web dashboard plus Slack approval bot
   WHETHER   40    CAP     unknown      Paid OCR with no cost per active user
   WHEN      30    ..      unknown      Two weeks, not mapped to scope
 
-Focus: WHAT, 72/100. Needs +18.
+Focus: WHAT, 65/100. Needs +25.
 ```
 
 Status: `OK` at or above the gate. `..` in progress. `CAP` a cap is active. `LOCKED` the user locked it below the gate. Evidence: unknown, assumption, user, source, observed.

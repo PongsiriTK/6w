@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Repository gate. Run with `npm test`.
 // Checks: manifests parse, every path a manifest names exists and is relative,
-// one version string across .version-bump.json, SKILL.md frontmatter and size,
-// every relative Markdown link resolves, and no em dash in authored Markdown.
+// one version string across .version-bump.json (which must list every manifest), SKILL.md
+// frontmatter and size, every relative Markdown link and HTML src resolves from its file,
+// and no em dash in authored Markdown.
 
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname, resolve, relative, sep } from "node:path";
@@ -32,8 +33,8 @@ function requirePath(manifestPath, field, value) {
 		fail(`${rel(manifestPath)}: ${field} must be a relative path without "..", got ${JSON.stringify(value)}`);
 		return;
 	}
-	if (!existsSync(join(dirname(manifestPath), value)) && !existsSync(join(root, value))) {
-		fail(`${rel(manifestPath)}: ${field} points at missing path ${value}`);
+	if (!existsSync(join(root, value))) {
+		fail(`${rel(manifestPath)}: ${field} points at missing path ${value} (manifest paths resolve from the repository root)`);
 	}
 }
 
@@ -87,6 +88,10 @@ for (const m of [".claude-plugin/plugin.json", ".cursor-plugin/plugin.json", ".c
 {
 	const bump = readJson(join(root, ".version-bump.json"));
 	const versions = new Map();
+	const listed = new Set((bump?.files ?? []).map((f) => f.path));
+	for (const m of ["package.json", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", ".cursor-plugin/plugin.json", ".codex-plugin/plugin.json", ".hermes-plugin/plugin.yaml"]) {
+		if (!listed.has(m)) fail(`.version-bump.json: ${m} is not listed, so its version is unchecked`);
+	}
 	for (const { path, field } of bump?.files ?? []) {
 		const p = join(root, path);
 		if (!existsSync(p)) { fail(`.version-bump.json: ${path} does not exist`); continue; }
@@ -124,25 +129,28 @@ for (const m of [".claude-plugin/plugin.json", ".cursor-plugin/plugin.json", ".c
 	}
 }
 
-// 4. Markdown links and em dashes
+// 4. Markdown links, HTML src attributes and em dashes
 const mdFiles = walk(root).filter((p) => p.endsWith(".md"));
-const linkRe = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+const inlineLinkRe = /\[[^\]]*\]\(<?([^)\s>]+)>?(?:\s+"[^"]*")?\)/g;
+const refLinkRe = /^\[[^\]]+\]:\s*<?(\S+?)>?(?:\s+"[^"]*")?\s*$/gm;
+const htmlSrcRe = /\b(?:src|srcset|href)="([^"\s]+)"/g;
+function checkTarget(file, target, raw) {
+	if (/^(https?:|mailto:|#|data:)/.test(target)) return;
+	const path = target.split("#")[0].split("?")[0];
+	if (!path) return;
+	if (!existsSync(join(dirname(file), path))) fail(`${rel(file)}: link target not found: ${raw} (links resolve relative to the file)`);
+}
 for (const p of mdFiles) {
 	const r = rel(p);
 	let text = readFileSync(p, "utf8");
-	if (!r.startsWith("docs/sources/") && text.includes("—")) {
-		const line = text.split("\n").findIndex((l) => l.includes("—")) + 1;
+	if (!r.startsWith("docs/sources/") && text.includes("\u2014")) {
+		const line = text.split("\n").findIndex((l) => l.includes("\u2014")) + 1;
 		fail(`${r}:${line}: em dash (U+2014) in authored Markdown`);
 	}
-	text = text.replace(/```[\s\S]*?```/g, "").replace(/`[^`\n]*`/g, "");
-	for (const m of text.matchAll(linkRe)) {
-		let target = m[1];
-		if (/^(https?:|mailto:|#)/.test(target)) continue;
-		target = target.split("#")[0];
-		if (!target) continue;
-		const candidates = [join(dirname(p), target), join(root, target)];
-		if (!candidates.some((c) => existsSync(c))) fail(`${r}: link target not found: ${m[1]}`);
-	}
+	text = text.replace(/```[\s\S]*?```/g, "").replace(/~~~[\s\S]*?~~~/g, "").replace(/`[^`\n]*`/g, "");
+	for (const m of text.matchAll(inlineLinkRe)) checkTarget(p, m[1], m[1]);
+	for (const m of text.matchAll(refLinkRe)) checkTarget(p, m[1], m[1]);
+	for (const m of text.matchAll(htmlSrcRe)) checkTarget(p, m[1], m[1]);
 }
 
 if (failures.length) {
