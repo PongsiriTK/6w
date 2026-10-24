@@ -76,7 +76,7 @@ function table(rows, cols) {
 	return `<table><thead><tr>${cols.map(([h]) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${cols.map(([, f]) => `<td>${f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 }
 
-export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.0.3", diagrams = {}, hash = stateHash(state) } = {}) {
+export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.0.4", diagrams = {}, hash = stateHash(state) } = {}) {
 	const computed = computeScores(state);
 	const R = state.records ?? {};
 	const stage = stageLabel[state.session.stage] ?? state.session.stage;

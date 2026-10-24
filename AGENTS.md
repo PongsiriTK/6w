@@ -8,7 +8,8 @@ This repository holds the 6W skill and its blueprint. Read [BLUEPRINT.md](BLUEPR
 | --- | --- |
 | `BLUEPRINT.md` | The master specification. Every behavior rule, output contract and open decision lives here. |
 | `skills/6w/SKILL.md` | The portable skill. Hosts load this file. Keep it under 500 lines and keep every path it names real. |
-| `skills/6w/references/` | Material the skill reads on demand: `scoring-rubric.md` always, `pricing-models.md` for commercial projects, and later the persona, interview and stack references. |
+| `skills/6w/references/` | Material the skill reads on demand: `scoring-rubric.md` always, `interview-examples.md` when forming a question, `persona-edge-matrix.md` before a card, `pricing-models.md` for commercial projects, `stack-archetypes.md` before a technical direction. |
+| `tests/fixtures/` | Behavioral cases. `build-fixtures.mjs` generates them from the examples; edit the generator, not the JSON. `tests/fixtures.test.mjs` fails when they are stale. |
 | `skills/6w/scripts/` | `rubric.mjs` holds the numbers, `scoring.mjs` the pure functions, `score.mjs` the scoring CLI, `validate.mjs` checks a state file, `state.mjs` saves and checkpoints, `diagrams.mjs` handles archify and the SVG fallback, `render.mjs` and `handoff.mjs` produce HTML and Markdown, `export.mjs` writes the bundle atomically. Tests sit next to them as `*.test.mjs`. |
 | `skills/6w/templates/` | `blueprint.css`, inlined by `render.mjs`. |
 | `docs/demo/menulens/` | The exported complete example (page plus handoff), served by GitHub Pages. Regenerate with `node scripts/build-demo.mjs` after changing any renderer or the example; a test fails when it is stale. |

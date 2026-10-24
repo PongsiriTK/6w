@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "0.1",
+  "rubricVersion": "0.2",
+  "metadata": {
+    "projectId": "menulens",
+    "title": "MenuLens",
+    "language": "en",
+    "createdAt": "2026-10-23T14:02:00+07:00",
+    "updatedAt": "2026-10-23T14:04:00+07:00",
+    "maturity": "idea"
+  },
+  "session": {
+    "mode": "deep",
+    "tone": "standard",
+    "stage": "build-mvp",
+    "gate": 90,
+    "phase": 2,
+    "focus": "why",
+    "turns": 1,
+    "overrides": [
+      {
+        "w": "why",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      },
+      {
+        "w": "who",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      },
+      {
+        "w": "what",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      },
+      {
+        "w": "which",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      },
+      {
+        "w": "whether",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      },
+      {
+        "w": "when",
+        "reason": "User chose to finish at turn 1",
+        "at": "2026-10-23T14:05:00+07:00"
+      }
+    ]
+  },
+  "capabilities": {
+    "fileWrite": true,
+    "scripts": true,
+    "browsing": false,
+    "attachments": true,
+    "archify": false
+  },
+  "ws": {
+    "why": {
+      "summary": "Travelers cannot read foreign menus and order badly",
+      "ratings": [
+        {
+          "criterion": "pain-severity",
+          "rating": 2,
+          "rationale": "The user says ordering abroad is stressful and they once got a dish they could not eat. No frequency, cost or consequence beyond one anecdote.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "broken-workaround",
+          "rating": 1,
+          "rationale": "The user has not said what they or others do today. Google Lens translate is an obvious alternative they did not mention.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "value-capture",
+          "rating": 1,
+          "rationale": "\"Maybe freemium\" with no price logic and no cost side.",
+          "evidence": "assumption",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "success-metric",
+          "rating": 0,
+          "rationale": "No measurable outcome named.",
+          "evidence": "unknown"
+        }
+      ],
+      "caps": [
+        {
+          "id": "why-no-workaround",
+          "active": true,
+          "reason": "Current workaround not stated"
+        }
+      ],
+      "openQuestions": [
+        "What do you and other travelers do today when you cannot read a menu, and where does that fail?",
+        "How often does the problem bite on a typical trip?"
+      ],
+      "score": 28
+    },
+    "who": {
+      "summary": "\"All travelers\" with no segment named",
+      "ratings": [
+        {
+          "criterion": "beachhead-persona",
+          "rating": 1,
+          "rationale": "\"Travelers\" is the whole audience. No role, context or workflow.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "switching-trigger-and-objections",
+          "rating": 1,
+          "rationale": "Implied trigger is arriving abroad. No objections considered.",
+          "evidence": "assumption"
+        },
+        {
+          "criterion": "distribution",
+          "rating": 0,
+          "rationale": "No channel named and no sign the builder can reach travelers.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "buyer-user-anti-persona",
+          "rating": 0,
+          "rationale": "Buyer and user not discussed. No excluded segment.",
+          "evidence": "unknown"
+        }
+      ],
+      "caps": [
+        {
+          "id": "who-everyone",
+          "active": true,
+          "reason": "Audience is \"all travelers\""
+        }
+      ],
+      "openQuestions": [
+        "Which traveler feels this most sharply, and do you know any of them?"
+      ],
+      "score": 14
+    },
+    "what": {
+      "summary": "Photo of a menu to explained dishes, plus six more features",
+      "ratings": [
+        {
+          "criterion": "core-loop",
+          "rating": 3,
+          "rationale": "Photo in, dish explanations out is a clear loop. Value moment is not pinned down.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "v1-must-haves",
+          "rating": 1,
+          "rationale": "Seven features listed: translate, allergens, recommendations, favorites, sharing, offline, restaurant reviews. No acceptance criteria.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "explicit-anti-scope",
+          "rating": 0,
+          "rationale": "Nothing is excluded.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "day-one-inputs",
+          "rating": 2,
+          "rationale": "A photo is implied. Language, dietary profile and account are not discussed.",
+          "evidence": "assumption"
+        }
+      ],
+      "caps": [
+        {
+          "id": "what-unbounded-scope",
+          "active": true,
+          "reason": "Seven features and no anti-scope list"
+        }
+      ],
+      "openQuestions": [
+        "Which of the seven features can wait until after the first trip?"
+      ],
+      "score": 39
+    },
+    "which": {
+      "summary": "\"An app\", assumed native mobile",
+      "ratings": [
+        {
+          "criterion": "primary-form-factor",
+          "rating": 2,
+          "rationale": "\"An app\" means native mobile to the user. No alternatives considered.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "workflow-fit",
+          "rating": 1,
+          "rationale": "Fit to the traveler's moment (standing in a restaurant, phone in hand) is plausible but unexamined.",
+          "evidence": "assumption"
+        },
+        {
+          "criterion": "device-and-environment-constraints",
+          "rating": 1,
+          "rationale": "Roaming data, weak connectivity and camera quality matter for travel and were not raised.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "integration-boundary",
+          "rating": 1,
+          "rationale": "A vision model API is implied. Nothing else named.",
+          "evidence": "assumption"
+        }
+      ],
+      "caps": [
+        {
+          "id": "which-native-without-reason",
+          "active": true,
+          "reason": "Native app chosen with no hardware or habit reason over the web"
+        }
+      ],
+      "openQuestions": [
+        "Why native rather than a web page the traveler opens from the camera?"
+      ],
+      "score": 33
+    },
+    "whether": {
+      "summary": "Paid vision model with no cost estimate; allergen advice liability unexamined",
+      "ratings": [
+        {
+          "criterion": "unit-economics",
+          "rating": 0,
+          "rationale": "Every scan calls a paid vision model. No cost per scan or per user estimated.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "technical-bottlenecks",
+          "rating": 1,
+          "rationale": "Latency per scan and handwritten menus are obvious risks, not yet discussed.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "legal-privacy-security",
+          "rating": 1,
+          "rationale": "Allergen information carries real liability. Photo retention not discussed.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "persona-ux-edge-cases",
+          "rating": 1,
+          "rationale": "No edge cases named.",
+          "evidence": "unknown"
+        }
+      ],
+      "caps": [
+        {
+          "id": "whether-no-unit-cost",
+          "active": true,
+          "reason": "Paid model calls with no cost per active user"
+        }
+      ],
+      "openQuestions": [
+        "What does one scan cost at the vision model's current pricing, and how many scans does a trip take?"
+      ],
+      "score": 18
+    },
+    "when": {
+      "summary": "Wants it before a trip in six weeks; capacity unknown",
+      "ratings": [
+        {
+          "criterion": "builder-bandwidth",
+          "rating": 1,
+          "rationale": "Solo builder, hours per week not stated.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "proof-of-concept",
+          "rating": 0,
+          "rationale": "No intermediate milestone.",
+          "evidence": "unknown"
+        },
+        {
+          "criterion": "mvp-date",
+          "rating": 1,
+          "rationale": "Six weeks until the trip. No buffer, no definition of done.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001"
+          ]
+        },
+        {
+          "criterion": "cut-line",
+          "rating": 0,
+          "rationale": "Nothing named to drop when behind.",
+          "evidence": "unknown"
+        }
+      ],
+      "caps": [
+        {
+          "id": "when-scope-exceeds-capacity",
+          "active": true,
+          "reason": "Seven features on a native app in six weeks of unknown capacity"
+        }
+      ],
+      "openQuestions": [
+        "How many hours a week do you have between now and the trip?"
+      ],
+      "score": 14
+    }
+  },
+  "records": {
+    "sources": [
+      {
+        "id": "SRC-001",
+        "title": "Opening message from the user",
+        "origin": "user",
+        "locator": "conversation, turn 1",
+        "coverage": "fully-read",
+        "limitations": "Two sentences. One anecdote. No documents attached."
+      }
+    ],
+    "personas": [],
+    "edges": [],
+    "decisions": [],
+    "requirements": [],
+    "risks": [],
+    "assumptions": [
+      {
+        "id": "ASM-001",
+        "title": "WHY broken-workaround is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on broken-workaround is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      },
+      {
+        "id": "ASM-002",
+        "title": "WHO beachhead-persona is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on beachhead-persona is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      },
+      {
+        "id": "ASM-003",
+        "title": "WHAT v1-must-haves is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on v1-must-haves is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      },
+      {
+        "id": "ASM-004",
+        "title": "WHICH workflow-fit is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on workflow-fit is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      },
+      {
+        "id": "ASM-005",
+        "title": "WHETHER unit-economics is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on unit-economics is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      },
+      {
+        "id": "ASM-006",
+        "title": "WHEN builder-bandwidth is unresolved",
+        "status": "untested",
+        "implication": "Any decision that depends on builder-bandwidth is provisional. Revisit before building on it.",
+        "evidence": "unknown"
+      }
+    ],
+    "experiments": [],
+    "tasks": []
+  },
+  "overall": 24
+}

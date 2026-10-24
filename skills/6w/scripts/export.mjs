@@ -15,7 +15,7 @@ import { renderHtml, stateHash } from "./render.mjs";
 import { renderHandoff, HANDOFF_FILES } from "./handoff.mjs";
 import { loadDiagrams } from "./diagrams.mjs";
 
-export const BLUEPRINT_VERSION = "0.0.3";
+export const BLUEPRINT_VERSION = "0.0.4";
 export const HTML_NAME = "6w-blueprint.html";
 export const HANDOFF_DIR = posix.join(".6w", "handoff");
 export const MANIFEST_NAME = "export-manifest.json";

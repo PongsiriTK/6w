@@ -1,0 +1,39 @@
+{
+  "overall": 90,
+  "scores": {
+    "why": 94,
+    "who": 94,
+    "what": 95,
+    "which": 95,
+    "whether": 94,
+    "when": 65
+  },
+  "statuses": {
+    "why": "OK",
+    "who": "OK",
+    "what": "OK",
+    "which": "OK",
+    "whether": "OK",
+    "when": "CAP"
+  },
+  "evidence": {
+    "why": "assumption",
+    "who": "user",
+    "what": "user",
+    "which": "assumption",
+    "whether": "assumption",
+    "when": "user"
+  },
+  "statusIs": {
+    "when": "CAP"
+  },
+  "scoreAtMost": {
+    "when": 65
+  },
+  "openQuestionsAtLeast": {
+    "when": 3
+  },
+  "exportIncludes": [
+    "do not fit"
+  ]
+}

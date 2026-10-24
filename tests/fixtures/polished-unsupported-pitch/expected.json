@@ -1,0 +1,43 @@
+{
+  "overall": 94,
+  "scores": {
+    "why": 94,
+    "who": 94,
+    "what": 95,
+    "which": 95,
+    "whether": 94,
+    "when": 94
+  },
+  "statuses": {
+    "why": "OK",
+    "who": "OK",
+    "what": "OK",
+    "which": "OK",
+    "whether": "OK",
+    "when": "OK"
+  },
+  "evidence": {
+    "why": "assumption",
+    "who": "assumption",
+    "what": "assumption",
+    "which": "assumption",
+    "whether": "assumption",
+    "when": "assumption"
+  },
+  "allEvidenceIn": [
+    "assumption",
+    "unknown"
+  ],
+  "recordIncludes": {
+    "risks": [
+      "RISK-004"
+    ]
+  },
+  "sourceCoverage": {
+    "SRC-001": "partially-read"
+  },
+  "exportIncludes": [
+    "partially-read",
+    "RISK-004"
+  ]
+}

@@ -100,6 +100,8 @@ Or, where the host supports commands, `/6w`, `/6w quick`, `/6w deep`, `/6w roast
 | `skills/6w/SKILL.md` | The portable skill every host loads |
 | `skills/6w/references/scoring-rubric.md` | Sub-criteria, anchors, caps and the formula |
 | `skills/6w/references/pricing-models.md` | Value metric, pricing model and experiments for commercial projects, read on demand |
+| `skills/6w/references/persona-edge-matrix.md`, `interview-examples.md`, `stack-archetypes.md` | Persona and edge-case rules, a strong question per sub-criterion, and stack patterns with the unit-economics table |
+| `tests/fixtures/` | Six behavioral cases with input, review notes, expected state and invariants |
 | `skills/6w/scripts/` | `score.mjs` scores and prints the scoreboard, `validate.mjs` checks a state file, `state.mjs` saves, checkpoints and migrates, `diagrams.mjs` handles archify and the SVG fallback, `render.mjs` and `handoff.mjs` produce the HTML and Markdown, `export.mjs` writes the whole bundle atomically. Tests next to them. |
 | `skills/6w/templates/` | `blueprint.css`, inlined into every rendered page |
 | `docs/demo/` | The exported MenuLens blueprint and handoff, served by GitHub Pages, rebuilt with `node scripts/build-demo.mjs` |

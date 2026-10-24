@@ -3,7 +3,7 @@ name: 6w
 description: Product discovery before code. Use when the user wants to brainstorm, validate, scope or position a new app, product, side project or internal tool; asks for personas, edge cases, MVP scope, a tech stack or a roadmap before building; says "I want to build X"; or asks for 6W, a product blueprint, or a plan a coding agent can execute. Runs the 6W loop (Why, Who, What, Which, Whether, When), scores readiness without inflating it, and exports one offline HTML blueprint plus a Markdown handoff.
 license: MIT
 metadata:
-  version: "0.0.3"
+  version: "0.0.4"
   author: PongsiriTK
 ---
 
@@ -11,7 +11,7 @@ metadata:
 
 Guide the user through six decisions before implementation, score each one honestly, and export two things from one state: `6w-blueprint.html` for people and `.6w/handoff/` for the coding agent.
 
-Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula. `references/pricing-models.md` is read on demand for commercial projects, as described under Phase 1.
+Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula. The other references are read on demand: `interview-examples.md` when you form a question, `persona-edge-matrix.md` before any persona or edge-case card, `pricing-models.md` for commercial projects when value capture is weak, `stack-archetypes.md` before recording a technical direction.
 
 ## When to use
 
@@ -59,7 +59,7 @@ Each turn:
 1. Render the scoreboard.
 2. Name the W in focus and its lowest-rated sub-criterion or an open contradiction with another W.
 3. Say in one or two sentences why it is below the gate.
-4. Ask one or two questions. Give three concrete options tailored to this project plus a custom answer. Say why the question matters when that is not obvious.
+4. Ask one or two questions. Give three concrete options tailored to this project plus a custom answer. Say why the question matters when that is not obvious. `references/interview-examples.md` has a weak and a strong question for every sub-criterion; use the shape, build the options from state.
 5. Record the user's answer as theirs. Record your recommendation as yours.
 6. Re-rate, update linked records and freshness markers, then run `score.mjs --write` to save the scores. Before any export, run `state.mjs checkpoint .6w/state.json` so the last valid state is kept under `.6w/checkpoints/`.
 7. When a W reaches the gate, mark it `OK` and move to the next W below the gate.
@@ -68,6 +68,8 @@ Pricing. When the project is commercial, the session is in deep mode or the user
 
 When the user says skip, next, move on or good enough, mark the W `LOCKED`, add every unresolved sub-criterion to the assumption register, and advance. Never raise a score to end a conversation.
 
+When the user changes an earlier decision, do not overwrite it. Add a new `DEC-` with status `proposed` that lists every dependent record in `affects`, set the old decision to `superseded`, re-rate the affected Ws honestly, and mark dependent Ws with a `notes` line that says they need review. Explain what changed and what still holds.
+
 In quick mode, stop after the canvas, the priority audience, a bounded scope and the three most consequential uncertainties are in place, then recommend export or an experiment. In deep mode, keep going until the gate or the user's stop.
 
 ### Phase 2. Assumption lock
@@ -75,8 +77,9 @@ In quick mode, stop after the canvas, the priority audience, a bounded scope and
 Entered when the user finishes or any W is locked below the gate.
 
 1. Turn every unresolved sub-criterion into an `ASM-` record (an assumption you will build on) or a `RISK-` record (a threat with impact and mitigation). Write the implication for downstream decisions.
-2. Show the register. Let the user edit it.
-3. Save state.
+2. If the stage is build MVP and no technical direction is recorded, read `references/stack-archetypes.md` and record a proposed `DEC-`: the fast stack for this form factor, the scale stack as the alternative, and the observed trigger that would switch them. Fill the unit-economics table in the Whether rationale from the same reference.
+3. Show the register. Let the user edit it.
+4. Save state.
 
 ### Phase 3. Diagrams
 
@@ -124,7 +127,7 @@ Decision status and evidence status are separate axes. Acceptance by the user is
 
 ## Personas and edge cases
 
-Consider four roles: beachhead champion, skeptical buyer or gatekeeper, chaos or boundary user, anti-persona. Produce a card only when the context supports it. Always produce the anti-persona, because it records who is excluded. Every card states its evidence status and carries at least one behavioral or technical edge case with the product response. No decorative demographics. No inferred sensitive traits.
+Consider four roles: beachhead champion, skeptical buyer or gatekeeper, chaos or boundary user, anti-persona. Produce a card only when the context supports it. Always produce the anti-persona, because it records who is excluded. Every card states its evidence status and carries at least one behavioral or technical edge case with the product response. No decorative demographics. No inferred sensitive traits. Fields, scope decisions and the behavior-to-decision table are in `references/persona-edge-matrix.md`.
 
 ## Outputs
 

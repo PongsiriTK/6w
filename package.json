@@ -1,6 +1,6 @@
 {
   "name": "6w-skill",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "6W product-foundation skill repository",
   "type": "module",
@@ -8,7 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node scripts/check-repo.mjs && node --test skills/6w/scripts/*.test.mjs"
+    "test": "node scripts/check-repo.mjs && node --test skills/6w/scripts/*.test.mjs tests/*.test.mjs"
   },
   "license": "MIT"
 }

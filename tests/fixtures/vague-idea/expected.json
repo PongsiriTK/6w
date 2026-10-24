@@ -1,0 +1,41 @@
+{
+  "overall": 24,
+  "scores": {
+    "why": 28,
+    "who": 14,
+    "what": 39,
+    "which": 33,
+    "whether": 18,
+    "when": 14
+  },
+  "statuses": {
+    "why": "CAP",
+    "who": "CAP",
+    "what": "CAP",
+    "which": "CAP",
+    "whether": "CAP",
+    "when": "CAP"
+  },
+  "evidence": {
+    "why": "unknown",
+    "who": "unknown",
+    "what": "unknown",
+    "which": "unknown",
+    "whether": "unknown",
+    "when": "unknown"
+  },
+  "activeCaps": 6,
+  "recordCounts": {
+    "personas": 0,
+    "requirements": 0,
+    "risks": 0
+  },
+  "noEvidenceAbove": "user",
+  "exportIncludes": [
+    "No personas recorded",
+    "Below the gate: WHY"
+  ],
+  "exportExcludes": [
+    "Allergy traveler"
+  ]
+}

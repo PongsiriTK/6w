@@ -1,0 +1,778 @@
+{
+  "schemaVersion": "0.1",
+  "rubricVersion": "0.2",
+  "metadata": {
+    "projectId": "menulens-rush",
+    "title": "MenuLens",
+    "language": "en",
+    "createdAt": "2026-10-23T14:02:00+07:00",
+    "updatedAt": "2026-10-23T15:31:00+07:00",
+    "maturity": "idea"
+  },
+  "session": {
+    "mode": "deep",
+    "tone": "standard",
+    "stage": "build-mvp",
+    "gate": 90,
+    "phase": 2,
+    "turns": 11,
+    "overrides": []
+  },
+  "capabilities": {
+    "fileWrite": true,
+    "scripts": true,
+    "browsing": false,
+    "attachments": true,
+    "archify": false
+  },
+  "ws": {
+    "why": {
+      "summary": "Allergy travelers cannot tell what is safe to order from a menu they cannot read",
+      "ratings": [
+        {
+          "criterion": "pain-severity",
+          "rating": 4,
+          "rationale": "For a traveler with celiac disease or a nut allergy, every restaurant meal abroad is a risk decision. The user eats out 2 to 3 times a day on a trip and reports skipping meals or eating only packaged food on past trips. One bad dish costs a day of the trip.",
+          "evidence": "user",
+          "sources": [
+            "SRC-001",
+            "SRC-002"
+          ]
+        },
+        {
+          "criterion": "broken-workaround",
+          "rating": 4,
+          "rationale": "Google Lens translates words literally: it renders a dish name but not what is in it. Printed allergy cards get a nod from staff who do not read them carefully. Asking the waiter fails across the language barrier. Three linked r/Celiac threads describe the same pattern.",
+          "evidence": "source",
+          "sources": [
+            "SRC-002"
+          ]
+        },
+        {
+          "criterion": "value-capture",
+          "rating": 3,
+          "rationale": "Hypothesis: a one-trip pass at 4.99 USD or 19.99 USD a year. The allergy traveler already spends on cards and apps. Cost per trip estimated at roughly 0.14 USD in model calls (see ASM-002). Willingness to pay is untested.",
+          "evidence": "assumption",
+          "links": [
+            "ASM-001",
+            "ASM-002",
+            "EXP-001"
+          ]
+        },
+        {
+          "criterion": "success-metric",
+          "rating": 4,
+          "rationale": "Success: at least 60 percent of scans end with the user tapping \"I ordered this\" within the session. Kill signal: under 20 percent after the first 200 users, or more than two reports of a flagged dish that was unsafe.",
+          "evidence": "user",
+          "links": [
+            "EXP-002"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "why-no-workaround",
+          "active": false,
+          "reason": "Cleared in turn 2: workarounds named with their failure"
+        }
+      ],
+      "links": [
+        "DEC-002"
+      ],
+      "score": 94
+    },
+    "who": {
+      "summary": "English-speaking travelers with celiac disease or a severe food allergy, 2 or more trips a year to a country whose script they cannot read",
+      "ratings": [
+        {
+          "criterion": "beachhead-persona",
+          "rating": 4,
+          "rationale": "PERSONA-001: an English-speaking traveler with celiac disease or a severe allergy, planning a trip to Japan, Thailand or Italy, who already carries a printed allergy card. The product appears when they sit down and open the menu.",
+          "evidence": "user",
+          "links": [
+            "PERSONA-001"
+          ],
+          "sources": [
+            "SRC-001",
+            "SRC-002"
+          ]
+        },
+        {
+          "criterion": "switching-trigger-and-objections",
+          "rating": 4,
+          "rationale": "Trigger: booking a trip to a non-Latin-script country. Objections: can I trust an allergen flag with my health, what does it cost in roaming data, and \"I already use Google Translate\".",
+          "evidence": "source",
+          "sources": [
+            "SRC-002"
+          ],
+          "links": [
+            "EDGE-003"
+          ]
+        },
+        {
+          "criterion": "distribution",
+          "rating": 3,
+          "rationale": "r/Celiac, r/JapanTravel, two Facebook celiac travel groups and three allergy travel bloggers. The builder has celiac disease and posts in two of these communities, so the first fifty are reachable. No channel has been tested.",
+          "evidence": "user",
+          "links": [
+            "EXP-001"
+          ]
+        },
+        {
+          "criterion": "buyer-user-anti-persona",
+          "rating": 4,
+          "rationale": "Buyer and user are the same person. Anti-persona PERSONA-002: foodies without restrictions who enjoy ordering blind, and business travelers eating at hotels with English menus. Both excluded from v1 messaging and features.",
+          "evidence": "user",
+          "links": [
+            "PERSONA-002",
+            "DEC-002"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "who-everyone",
+          "active": false,
+          "reason": "Cleared in turn 3: beachhead narrowed to allergy travelers"
+        }
+      ],
+      "links": [
+        "PERSONA-001",
+        "PERSONA-002"
+      ],
+      "score": 94
+    },
+    "what": {
+      "summary": "Photo of a menu to dish cards with allergen flags for the user's profile, plus a local-language question card",
+      "ratings": [
+        {
+          "criterion": "core-loop",
+          "rating": 4,
+          "rationale": "MenuLens turns a photo of a menu into dish cards that say what each dish is, its main ingredients, and which of the user's allergens it may contain, then gives a phrase in the local language to confirm with staff. One photo, one answer, one question to ask.",
+          "evidence": "user",
+          "links": [
+            "REQ-001",
+            "REQ-002"
+          ]
+        },
+        {
+          "criterion": "v1-must-haves",
+          "rating": 4,
+          "rationale": "Four features with acceptance criteria: allergy profile setup (REQ-001), menu photo to dish cards with flags (REQ-002), local-language confirmation card (REQ-003), cache of the last 20 scanned menus for offline re-reading (REQ-004).",
+          "evidence": "user",
+          "links": [
+            "REQ-001",
+            "REQ-002",
+            "REQ-003",
+            "REQ-004"
+          ]
+        },
+        {
+          "criterion": "explicit-anti-scope",
+          "rating": 4,
+          "rationale": "Cut from v1 (DEC-003): dish recommendations and ranking, restaurant reviews, social sharing, favorites sync across devices, live camera translation, fully offline recognition. Google Lens remains the right tool for a traveler who only needs literal translation.",
+          "evidence": "user",
+          "links": [
+            "DEC-003"
+          ]
+        },
+        {
+          "criterion": "day-one-inputs",
+          "rating": 3,
+          "rationale": "The user brings an allergy profile, a destination language and a camera. Business rule: a flag is a warning to confirm, never a clearance. Profile edge cases (multiple severe allergies, cross-contamination) are recorded as EDGE-003 and EDGE-004.",
+          "evidence": "user",
+          "links": [
+            "EDGE-003",
+            "EDGE-004"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "what-unbounded-scope",
+          "active": false,
+          "reason": "Cleared in turn 5: four features and a named anti-scope list"
+        }
+      ],
+      "links": [
+        "DEC-003"
+      ],
+      "score": 95
+    },
+    "which": {
+      "summary": "Mobile web app installed to the home screen; native deferred until retention is shown",
+      "ratings": [
+        {
+          "criterion": "primary-form-factor",
+          "rating": 4,
+          "rationale": "DEC-001: a mobile web app with camera access and add-to-home-screen. Rejected: native iOS and Android for v1 (store review and two codebases in six weeks), a Telegram bot (no camera flow), a desktop site (wrong moment).",
+          "evidence": "user",
+          "links": [
+            "DEC-001"
+          ]
+        },
+        {
+          "criterion": "workflow-fit",
+          "rating": 4,
+          "rationale": "The traveler already has the phone out to photograph the menu. A link on the home screen that opens the camera matches that moment with no store download on hotel Wi-Fi.",
+          "evidence": "assumption",
+          "links": [
+            "PERSONA-001"
+          ]
+        },
+        {
+          "criterion": "device-and-environment-constraints",
+          "rating": 4,
+          "rationale": "Restaurants abroad mean roaming data and basements with one bar of signal. Images are compressed on the device before upload, results are cached, and the app degrades to the cached menus when offline (EDGE-002). Large text and labeled controls for one-handed use at a table.",
+          "evidence": "user",
+          "links": [
+            "EDGE-002",
+            "REQ-004"
+          ]
+        },
+        {
+          "criterion": "integration-boundary",
+          "rating": 3,
+          "rationale": "One vision model API behind a thin server. No restaurant data, maps or payment APIs in v1. Provider choice is open until EXP-002 measures accuracy and latency.",
+          "evidence": "assumption",
+          "links": [
+            "EXP-002",
+            "RISK-003"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "which-native-without-reason",
+          "active": false,
+          "reason": "Cleared in turn 6: web app chosen over native"
+        }
+      ],
+      "links": [
+        "DEC-001"
+      ],
+      "score": 95
+    },
+    "whether": {
+      "summary": "Provisional 0.012 USD per scan against a 4.99 USD trip pass; allergen liability handled as a confirm-with-staff flow, not a clearance",
+      "ratings": [
+        {
+          "criterion": "unit-economics",
+          "rating": 4,
+          "rationale": "ASM-002: one scan is one image plus about 1,500 output tokens, roughly 0.012 USD at the provider's listed vision pricing as of 2026-10 (needs re-verification before launch). At 12 scans a trip that is about 0.14 USD against a 4.99 USD pass. Monthly model cost at 100, 1,000 and 10,000 active users with one trip each: about 14, 140 and 1,400 USD, before hosting.",
+          "evidence": "assumption",
+          "links": [
+            "ASM-002",
+            "RISK-003"
+          ]
+        },
+        {
+          "criterion": "technical-bottlenecks",
+          "rating": 3,
+          "rationale": "Scan latency of 6 to 10 seconds at a table is tolerable once, painful three times. Handwritten and chalkboard menus fail often (EDGE-001). Provider rate limits at launch are untested.",
+          "evidence": "assumption",
+          "links": [
+            "EDGE-001",
+            "EXP-002"
+          ]
+        },
+        {
+          "criterion": "legal-privacy-security",
+          "rating": 4,
+          "rationale": "RISK-001: allergen flags are informational, never a clearance. Every card carries \"confirm with staff\" and the local-language question. Photos are processed and not stored. Issues to investigate before launch: consumer-protection wording for health information in the user's jurisdiction (Australia) and the EU for European users, and the model provider's terms on food images. Owner: the builder, before the first fifty users.",
+          "evidence": "user",
+          "links": [
+            "RISK-001",
+            "TASK-004"
+          ]
+        },
+        {
+          "criterion": "persona-ux-edge-cases",
+          "rating": 4,
+          "rationale": "EDGE-001 handwritten menu, EDGE-002 no connectivity, EDGE-003 cross-contamination invisible on a menu, EDGE-004 user with several severe allergies who distrusts any flag. Each has a product response and a remaining exposure.",
+          "evidence": "user",
+          "links": [
+            "EDGE-001",
+            "EDGE-002",
+            "EDGE-003",
+            "EDGE-004"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "whether-no-unit-cost",
+          "active": false,
+          "reason": "Cleared in turn 8: cost per scan and per trip estimated"
+        }
+      ],
+      "links": [
+        "RISK-001",
+        "RISK-002",
+        "RISK-003"
+      ],
+      "score": 94
+    },
+    "when": {
+      "summary": "Five hours a week and a trip in two weeks: four features on a web app do not fit",
+      "ratings": [
+        {
+          "criterion": "builder-bandwidth",
+          "rating": 4,
+          "rationale": "About 5 hours a week, stated plainly: evenings only, with a product launch at work in the same fortnight.",
+          "evidence": "user"
+        },
+        {
+          "criterion": "proof-of-concept",
+          "rating": 3,
+          "rationale": "A 48-hour proof of concept is still feasible: it is the whole budget.",
+          "evidence": "user",
+          "links": [
+            "TASK-001",
+            "EXP-002"
+          ]
+        },
+        {
+          "criterion": "mvp-date",
+          "rating": 1,
+          "rationale": "Departure in 14 days with 10 hours of capacity. REQ-001 to REQ-004 need roughly 60 to 75 hours. No buffer, no definition of done that fits.",
+          "evidence": "user",
+          "links": [
+            "REQ-001",
+            "REQ-002",
+            "REQ-003",
+            "REQ-004",
+            "TASK-002",
+            "TASK-003"
+          ]
+        },
+        {
+          "criterion": "cut-line",
+          "rating": 2,
+          "rationale": "The user has not chosen between cutting scope, moving the date or adding capacity. Three concrete alternatives were offered.",
+          "evidence": "user",
+          "links": [
+            "REQ-003",
+            "REQ-004"
+          ]
+        }
+      ],
+      "caps": [
+        {
+          "id": "when-scope-exceeds-capacity",
+          "active": true,
+          "reason": "60 to 75 hours of scope against 10 hours of capacity before the date"
+        }
+      ],
+      "links": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "score": 65,
+      "openQuestions": [
+        "Cut to the proof of concept only (REQ-002 with a hardcoded profile) and use it on the trip as a test, not a product?",
+        "Keep the scope and target the trip after this one?",
+        "Add capacity: a weekend of focused time or a second builder?"
+      ]
+    }
+  },
+  "records": {
+    "sources": [
+      {
+        "id": "SRC-001",
+        "title": "Conversation with the user, turns 1 to 11",
+        "origin": "user",
+        "locator": "conversation",
+        "coverage": "fully-read",
+        "limitations": "Self-reported. The user is the beachhead persona, which helps the detail and biases the sample."
+      },
+      {
+        "id": "SRC-002",
+        "title": "Three r/Celiac threads about eating out in Japan, pasted by the user",
+        "origin": "attachment",
+        "locator": "pasted text, turn 2",
+        "coverage": "fully-read",
+        "accessedAt": "2026-10-23",
+        "limitations": "Shows that the problem is discussed and how people work around it. Does not show willingness to pay or market size."
+      }
+    ],
+    "personas": [
+      {
+        "id": "PERSONA-001",
+        "title": "Allergy traveler",
+        "role": "beachhead champion",
+        "priority": "primary",
+        "evidence": "user",
+        "situation": "English speaker with celiac disease or a severe allergy, 2 or more trips a year to countries whose script they cannot read, already carries a printed allergy card",
+        "outcome": "Order a meal with confidence that it does not contain their allergen, and confirm it with staff in their language",
+        "workaround": "Google Lens for literal translation, printed cards, packaged food",
+        "trigger": "Booking a trip to a non-Latin-script country",
+        "objections": [
+          "Can I trust a flag with my health",
+          "Roaming data cost",
+          "I already use Google Translate"
+        ],
+        "channels": [
+          "r/Celiac",
+          "r/JapanTravel",
+          "Facebook celiac travel groups",
+          "allergy travel bloggers"
+        ],
+        "firstValue": "First scan shows a dish they would not have risked, flagged, with the question to ask",
+        "links": [
+          "EDGE-001",
+          "EDGE-002",
+          "EDGE-003",
+          "EDGE-004",
+          "REQ-001",
+          "REQ-002",
+          "REQ-003"
+        ],
+        "sources": [
+          "SRC-001",
+          "SRC-002"
+        ]
+      },
+      {
+        "id": "PERSONA-002",
+        "title": "Blind-ordering foodie and the hotel business traveler",
+        "role": "anti-persona",
+        "priority": "excluded",
+        "evidence": "assumption",
+        "situation": "Enjoys ordering without knowing, or eats where English menus exist",
+        "reason": "Neither has the allergen pain. Both would judge the product on recommendations and reviews, which are out of scope.",
+        "links": [
+          "DEC-002",
+          "DEC-003"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "id": "EDGE-001",
+        "title": "Handwritten or chalkboard menu",
+        "persona": "PERSONA-001",
+        "severity": "high",
+        "frequency": "common in Italy and Japan izakaya",
+        "impact": "Recognition fails or invents dishes",
+        "response": "Show a confidence state per card. Below the threshold, show the local-language question card only and say the menu could not be read.",
+        "scopeDecision": "support-now",
+        "test": "Given a photo the model cannot parse, when scanned, then no dish cards appear and the question card and an honest message do.",
+        "links": [
+          "PERSONA-001",
+          "REQ-002",
+          "RISK-002"
+        ]
+      },
+      {
+        "id": "EDGE-002",
+        "title": "No connectivity at the table",
+        "persona": "PERSONA-001",
+        "severity": "medium",
+        "frequency": "frequent in basements and rural areas",
+        "impact": "Scan cannot run",
+        "response": "Keep the last 20 scanned menus and the question cards available offline. Compress images before upload so one bar is enough when there is signal.",
+        "scopeDecision": "support-now",
+        "test": "Given airplane mode, when the app opens, then cached menus and question cards are readable.",
+        "links": [
+          "PERSONA-001",
+          "REQ-004"
+        ]
+      },
+      {
+        "id": "EDGE-003",
+        "title": "Cross-contamination is invisible on a menu",
+        "persona": "PERSONA-001",
+        "severity": "critical",
+        "frequency": "always",
+        "impact": "A dish with no flagged ingredient can still be unsafe (shared fryer, soy sauce with wheat)",
+        "response": "Every card says that flags are a warning to confirm, not a clearance. The question card asks about preparation, not only ingredients.",
+        "scopeDecision": "support-now",
+        "test": "Given any dish card, then the confirm-with-staff line and the preparation question are present.",
+        "links": [
+          "PERSONA-001",
+          "RISK-001",
+          "REQ-003"
+        ]
+      },
+      {
+        "id": "EDGE-004",
+        "title": "Several severe allergies and low trust in any app",
+        "persona": "PERSONA-001",
+        "severity": "high",
+        "frequency": "a minority of the segment",
+        "impact": "User ignores flags or abandons",
+        "response": "Profile supports multiple allergens. Cards show the ingredient that triggered the flag, so the user can judge it, not only a red icon.",
+        "scopeDecision": "support-now",
+        "test": "Given a profile with three allergens, when a dish contains two, then both ingredients are named on the card.",
+        "links": [
+          "PERSONA-001",
+          "REQ-001",
+          "REQ-002"
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "DEC-001",
+        "title": "Mobile web app first, native deferred",
+        "status": "accepted",
+        "rationale": "Six weeks, one builder, two platforms otherwise. Camera access from the browser is enough. Native reconsidered when retention after two trips is known.",
+        "alternatives": [
+          "Native iOS and Android",
+          "Telegram bot",
+          "Desktop site"
+        ],
+        "evidence": "user",
+        "affects": [
+          "REQ-002",
+          "REQ-004",
+          "TASK-002"
+        ]
+      },
+      {
+        "id": "DEC-002",
+        "title": "Beachhead is the allergy traveler, not all travelers",
+        "status": "accepted",
+        "rationale": "Sharpest pain, reachable communities, the builder is one of them.",
+        "alternatives": [
+          "All travelers",
+          "Vegetarians and vegans abroad"
+        ],
+        "evidence": "user",
+        "affects": [
+          "PERSONA-001",
+          "PERSONA-002",
+          "REQ-001"
+        ]
+      },
+      {
+        "id": "DEC-003",
+        "title": "No recommendations, reviews, sharing, favorites sync, live translation or offline recognition in v1",
+        "status": "accepted",
+        "rationale": "None of them reduces allergen risk. Each adds a week.",
+        "evidence": "user",
+        "affects": [
+          "REQ-002"
+        ]
+      },
+      {
+        "id": "DEC-004",
+        "title": "Price as a trip pass at 4.99 USD with a yearly option",
+        "status": "proposed",
+        "rationale": "Matches how the segment buys travel tools. Untested.",
+        "evidence": "assumption",
+        "links": [
+          "ASM-001",
+          "EXP-001"
+        ]
+      }
+    ],
+    "requirements": [
+      {
+        "id": "REQ-001",
+        "title": "Allergy profile",
+        "priority": "must",
+        "status": "in-scope",
+        "outcome": "The user records one or more allergens and dietary rules once",
+        "acceptance": [
+          "Given a new user, when they open the app, then they can select allergens from a list and add a free-text rule before the first scan",
+          "Given a saved profile, when the app reopens, then the profile is present without sign-in"
+        ],
+        "links": [
+          "PERSONA-001",
+          "DEC-002",
+          "EDGE-004"
+        ]
+      },
+      {
+        "id": "REQ-002",
+        "title": "Menu photo to dish cards with allergen flags",
+        "priority": "must",
+        "status": "in-scope",
+        "outcome": "One photo becomes a list of dishes the user can judge",
+        "acceptance": [
+          "Given a legible printed menu photo, when scanned, then each dish shows its name, a one-line description, main ingredients and a flag per matching allergen within 15 seconds",
+          "Given a flag, then the ingredient that caused it is named on the card"
+        ],
+        "links": [
+          "PERSONA-001",
+          "DEC-001",
+          "DEC-003",
+          "EDGE-001",
+          "EDGE-004",
+          "RISK-002"
+        ]
+      },
+      {
+        "id": "REQ-003",
+        "title": "Local-language confirmation card",
+        "priority": "must",
+        "status": "in-scope",
+        "outcome": "The user can ask staff about ingredients and preparation",
+        "acceptance": [
+          "Given a dish card, when tapped, then a card in the destination language asks whether the dish contains the user's allergens and how it is prepared, with a transliteration"
+        ],
+        "links": [
+          "PERSONA-001",
+          "EDGE-003",
+          "RISK-001"
+        ]
+      },
+      {
+        "id": "REQ-004",
+        "title": "Offline cache of recent menus",
+        "priority": "should",
+        "status": "in-scope",
+        "outcome": "Past scans are readable without signal",
+        "acceptance": [
+          "Given airplane mode, when the app opens, then the last 20 scanned menus and their question cards are readable"
+        ],
+        "links": [
+          "PERSONA-001",
+          "DEC-001",
+          "EDGE-002"
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "id": "RISK-001",
+        "title": "A flagged-safe dish harms a user",
+        "severity": "critical",
+        "status": "open",
+        "mitigation": "Flags are warnings, never clearances. Confirm-with-staff on every card. Preparation question included. Wording for health information to be investigated in Australia and the EU before launch.",
+        "exposure": "Residual. The app cannot see the kitchen.",
+        "evidence": "user",
+        "links": [
+          "EDGE-003",
+          "REQ-003",
+          "TASK-004"
+        ]
+      },
+      {
+        "id": "RISK-002",
+        "title": "The model invents ingredients",
+        "severity": "high",
+        "status": "open",
+        "mitigation": "Confidence state per card. Accuracy test against a native speaker on ten real menus before anyone else uses it.",
+        "exposure": "Residual for rare dishes.",
+        "evidence": "assumption",
+        "links": [
+          "EDGE-001",
+          "EXP-002",
+          "REQ-002"
+        ]
+      },
+      {
+        "id": "RISK-003",
+        "title": "Vision pricing changes or rate limits bite",
+        "severity": "medium",
+        "status": "open",
+        "mitigation": "Re-verify pricing before launch. Thin server so the provider can be swapped.",
+        "exposure": "Cost per trip could double and still be under 0.30 USD.",
+        "evidence": "assumption",
+        "links": [
+          "ASM-002"
+        ]
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "ASM-001",
+        "title": "Allergy travelers will pay 4.99 USD for a trip pass",
+        "status": "untested",
+        "implication": "If false, the yearly option or a free tier with a scan limit is the fallback.",
+        "evidence": "assumption",
+        "links": [
+          "DEC-004",
+          "EXP-001"
+        ]
+      },
+      {
+        "id": "ASM-002",
+        "title": "One scan costs about 0.012 USD and a trip takes about 12 scans",
+        "status": "untested",
+        "implication": "If cost is 5 times higher the trip pass still covers it. Pricing is provisional and dated 2026-10.",
+        "evidence": "assumption",
+        "links": [
+          "RISK-003",
+          "EXP-002"
+        ]
+      }
+    ],
+    "experiments": [
+      {
+        "id": "EXP-001",
+        "title": "Landing page and waitlist posted in r/Celiac and one Facebook group",
+        "measure": "Sign-ups and replies to a 4.99 USD price question",
+        "timebox": "Week 1, 5 days",
+        "decisionRule": "Under 25 sign-ups means the channel or the pitch is wrong. Revisit Who before building REQ-003.",
+        "status": "planned",
+        "links": [
+          "ASM-001",
+          "DEC-004",
+          "PERSONA-001"
+        ]
+      },
+      {
+        "id": "EXP-002",
+        "title": "Ten real menus scored against a native speaker",
+        "measure": "Dishes correctly identified, allergens correctly flagged, latency per scan",
+        "timebox": "Within the 48-hour proof of concept",
+        "decisionRule": "Under 80 percent correct flags means the core loop is not safe to ship. Stop or change approach.",
+        "status": "planned",
+        "links": [
+          "RISK-002",
+          "ASM-002",
+          "TASK-001"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TASK-001",
+        "title": "Proof of concept: ten menu photos to dish cards with a hardcoded profile",
+        "milestone": "48 hours",
+        "verification": "EXP-002 recorded",
+        "links": [
+          "REQ-002",
+          "EXP-002"
+        ]
+      },
+      {
+        "id": "TASK-002",
+        "title": "Web app with camera capture, profile, dish cards and confirmation cards",
+        "milestone": "Week 4",
+        "verification": "REQ-001, REQ-002 and REQ-003 acceptance criteria pass on the builder's phone",
+        "links": [
+          "REQ-001",
+          "REQ-002",
+          "REQ-003",
+          "DEC-001"
+        ]
+      },
+      {
+        "id": "TASK-003",
+        "title": "Offline cache and two external testers",
+        "milestone": "Week 5",
+        "verification": "REQ-004 passes in airplane mode. Two r/Celiac testers scan a real menu.",
+        "links": [
+          "REQ-004",
+          "PERSONA-001"
+        ]
+      },
+      {
+        "id": "TASK-004",
+        "title": "Investigate health-information wording and provider terms",
+        "milestone": "Before the first external tester",
+        "verification": "Notes recorded with sources and dates in RISK-001",
+        "links": [
+          "RISK-001"
+        ]
+      }
+    ]
+  },
+  "overall": 90
+}

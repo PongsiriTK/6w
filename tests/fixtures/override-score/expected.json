@@ -1,0 +1,41 @@
+{
+  "overall": 89,
+  "scores": {
+    "why": 94,
+    "who": 94,
+    "what": 65,
+    "which": 95,
+    "whether": 94,
+    "when": 94
+  },
+  "statuses": {
+    "why": "OK",
+    "who": "OK",
+    "what": "LOCKED",
+    "which": "OK",
+    "whether": "OK",
+    "when": "OK"
+  },
+  "evidence": {
+    "why": "assumption",
+    "who": "user",
+    "what": "assumption",
+    "which": "assumption",
+    "whether": "assumption",
+    "when": "user"
+  },
+  "statusIs": {
+    "what": "LOCKED"
+  },
+  "scoreAtMost": {
+    "what": 65
+  },
+  "recordIncludes": {
+    "assumptions": [
+      "ASM-003"
+    ]
+  },
+  "exportIncludes": [
+    "LOCKED"
+  ]
+}

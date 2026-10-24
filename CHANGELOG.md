@@ -4,7 +4,15 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-10-24
+
 ### Added
+
+- `skills/6w/references/persona-edge-matrix.md`: the four roles, card fields, scope decisions, and the behavior-to-product-decision table.
+- `skills/6w/references/interview-examples.md`: a weak and a strong question for all 24 sub-criteria in the three-options shape.
+- `skills/6w/references/stack-archetypes.md`: fast stack and scale stack by form factor, the model-dependency rules, and the unit-economics table.
+- Six behavioral fixtures under `tests/fixtures/` (vague idea, polished unsupported pitch, finish immediately, override a score, late audience change, impossible date), each with input, review notes, expected state and deterministic invariants. `tests/fixtures.test.mjs` checks them and `build-fixtures.mjs` regenerates them.
+- The skill now describes revision propagation: a changed decision becomes a new proposed `DEC-` with `affects`, the old one is superseded, dependent Ws are re-rated and marked for review.
 
 - `skills/6w/references/pricing-models.md`, adapted from the MIT-licensed `pricing-strategy` skill in phuryn/pm-skills and credited in `THIRD_PARTY_NOTICES.md`. The skill reads it for commercial projects when value capture is weak: choose the value metric first, then the model, record the result as a proposed decision, assumptions, experiments and dated sources.
 - Rubric 0.2: the Why value-capture anchor for a 4 names the value metric and a falsifying experiment. Weights, caps and formula unchanged. Both examples re-rated, no rating changed.

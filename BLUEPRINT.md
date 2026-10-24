@@ -1,6 +1,6 @@
 # 6W master blueprint
 
-Version 0.0.3. 23 October 2026. Status: specification, skill, state schema, and scripts for scoring, validation, state, diagrams and the full export, with a worked demo published from them. Marketplace install and activation are untested on every host. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
+Version 0.0.4. 24 October 2026. Status: specification, skill, state schema, and scripts for scoring, validation, state, diagrams and the full export, with a worked demo published from them. Marketplace install and activation are untested on every host. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
 
 Tagline: give your idea a foundation before you build.
 
@@ -530,10 +530,9 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   ├── references/
 │   │   ├── scoring-rubric.md
 │   │   ├── pricing-models.md          adapted from phuryn/pm-skills (MIT)
-│   │   ├── persona-edge-matrix.md     (planned)
-│   │   ├── stack-archetypes.md        (planned)
-│   │   ├── interview-examples.md      (planned)
-│   │   └── archify-bridge.md          (planned)
+│   │   ├── persona-edge-matrix.md
+│   │   ├── interview-examples.md
+│   │   └── stack-archetypes.md
 │   ├── schemas/                 state.schema.json, export-manifest.schema.json
 │   ├── templates/blueprint.css  inlined into every rendered page
 │   └── scripts/
@@ -548,7 +547,9 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │       ├── export.mjs           CLI: the whole bundle plus export-manifest.json, atomic
 │       └── *.test.mjs           node --test suites next to the code (pstack)
 ├── examples/                    menulens-partial, menulens-complete, README.md
-└── tests/                       (planned) host checks and fixtures
+└── tests/
+    ├── fixtures/<case>/         input.md, notes.md, state.json, expected.json, plus build-fixtures.mjs
+    └── fixtures.test.mjs        deterministic invariants per case; host checks still planned
 ```
 
 Conventions taken from each reference repository:

@@ -1,0 +1,49 @@
+{
+  "overall": 85,
+  "scores": {
+    "why": 94,
+    "who": 38,
+    "what": 95,
+    "which": 95,
+    "whether": 94,
+    "when": 94
+  },
+  "statuses": {
+    "why": "OK",
+    "who": "CAP",
+    "what": "OK",
+    "which": "OK",
+    "whether": "OK",
+    "when": "OK"
+  },
+  "evidence": {
+    "why": "assumption",
+    "who": "unknown",
+    "what": "user",
+    "which": "assumption",
+    "whether": "assumption",
+    "when": "user"
+  },
+  "statusIs": {
+    "who": "CAP"
+  },
+  "scoreBelowGate": [
+    "who"
+  ],
+  "decisionStatus": {
+    "DEC-002": "superseded",
+    "DEC-005": "proposed"
+  },
+  "affectsInclude": {
+    "DEC-005": [
+      "PERSONA-001",
+      "REQ-001",
+      "EXP-001",
+      "DEC-002"
+    ]
+  },
+  "exportIncludes": [
+    "superseded",
+    "DEC-005"
+  ]
+}
