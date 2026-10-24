@@ -62,6 +62,13 @@ The session is synthetic, authored to exercise the rubric. `examples/README.md` 
 
 6W adapts the Five Ws, the Who, What, When, Where, Why and How that journalists and Kipling's "six honest serving-men" have used for over a century. Where becomes Which, because a product chooses a platform and a channel. How goes, since building it is the coding agent's job after the handoff. Whether is new: a product plan needs a go or no-go gate, and the original set has none.
 
+## Requirements
+
+- An agent host that loads skills. Claude Code is the tested one; see `docs/compatibility.md` for the others.
+- Node.js 18 or later on the same machine, for scoring, validation, saving and resuming, and the export. The scripts have no dependencies and need no `npm install`.
+
+Without Node, the conversation still works: 6W asks the same questions and shows the scoreboard, but scores the ratings by hand and says that they are unverified, and it cannot write `6w-blueprint.html` or the handoff. Check with `node --version`.
+
 ## Install
 
 Claude Code is the tested host. The others follow each host's documented convention and have no activation record yet. See `docs/compatibility.md` and report what you find.

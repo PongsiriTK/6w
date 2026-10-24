@@ -4,6 +4,15 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+### Added
+
+- README requirements: Node.js 18 or later for scoring, saving and export, and what still works without it.
+- Eval case `scores-with-script` with deterministic graders: the agent must call `score.mjs`, must create no file, and must ask at most two questions. It passed on both runs against 0.1.1.
+
+### Changed
+
+- GitHub private vulnerability reporting is enabled, matching `SECURITY.md`. The repository homepage points at the live demo.
+
 ## [0.1.1] - 2026-10-24
 
 ### Added
