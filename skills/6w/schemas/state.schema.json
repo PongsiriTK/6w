@@ -19,7 +19,11 @@
       "const": "0.1"
     },
     "rubricVersion": {
-      "const": "0.1"
+      "enum": [
+        "0.1",
+        "0.2"
+      ],
+      "description": "Rubric the ratings were made against. 0.2 changed anchor text only; scores are comparable across both."
     },
     "metadata": {
       "type": "object",

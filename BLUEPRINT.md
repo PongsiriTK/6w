@@ -19,7 +19,7 @@ Where the two disagreed, this document records the decision and the reason. The 
 
 | Topic | Source A (specification) | Source B (plugin blueprint) | Decision | Why |
 | --- | --- | --- | --- | --- |
-| Rubric | Four generic criteria (clarity, completeness, consistency, actionability), each 0 to 4, score = round(100 × sum / 16) | Four W-specific sub-criteria weighted 30/25/25/20, with hard caps | W-specific sub-criteria from B, rated 0 to 4 with A's anchors, weighted 30/25/25/20, then capped. Formula in section 7. | B's criteria tell a builder what is missing. A's anchors and deterministic arithmetic stop inflation. Both survive. |
+| Rubric | Four generic criteria (clarity, completeness, consistency, actionability), each 0 to 4, score = round(100 × sum / 16) | Four W-specific sub-criteria weighted 30/25/25/20, with hard caps | W-specific sub-criteria from B, rated 0 to 4 with A's anchors, weighted 30/25/25/20, then capped. Formula in section 6. | B's criteria tell a builder what is missing. A's anchors and deterministic arithmetic stop inflation. Both survive. |
 | Discovery order | Why, Who, What, Which, When, Whether | Why, Who, What, Which, Whether, When | Why, Who, What, Which, Whether, When. Risk screening runs from the first turn. | The When cap depends on knowing the technical bottlenecks found under Whether. |
 | Threshold | 90 per W, configurable | 90 per W, fixed | 90 per W, configurable in state | Same number. A's configurability is needed for pilots. |
 | Human output | `6W-Blueprint.html`, offline, no CDN, readable without JavaScript | `6w-master-hub.html` with Tailwind and Mermaid from CDN, five tabs | `6w-blueprint.html`, offline, no CDN, inline CSS and inline SVG, sections with sticky navigation rather than tabs. B's components become content inside A's sections. | A CDN dependency breaks the "opens anywhere" promise. Tabs hide content when JavaScript is off. |
@@ -97,7 +97,7 @@ Why is the problem worth solving, and why would someone choose this solution?
 | --- | ---: | --- |
 | Pain severity | 30 | Frequency, cost and consequence of the problem today |
 | Broken workaround | 25 | How people solve it now, including manual work and doing nothing, and why that fails |
-| Value capture | 25 | Revenue model, time saved or organizational value, with cost and support assumptions where relevant |
+| Value capture | 25 | Revenue model, time saved or organizational value, with cost and support assumptions where relevant. For commercial projects, the unit the price scales with (the value metric) and the pricing model, chosen with `pricing-models.md` |
 | Success metric | 20 | One measurable outcome that shows v1 worked, and what evidence would weaken the proposition |
 
 Cap: 60 when the user cannot name how people work around the problem today.
@@ -512,6 +512,7 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 ├── CONTRIBUTING.md
 ├── SECURITY.md                  # private vulnerability reporting (archify)
 ├── LICENSE                      # MIT
+├── THIRD_PARTY_NOTICES.md       # credits for adapted material (archify)
 ├── README.md                    # logo lockup, install per host, what is inside
 ├── package.json                 # `npm test` runs the gate; no dependencies
 ├── assets/logo/                 # 6w-mark.svg, 6w-mark-dark.svg, PNG, icon (archify lockups)
@@ -528,6 +529,7 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   ├── SKILL.md                 # the portable skill, under 500 lines
 │   ├── references/
 │   │   ├── scoring-rubric.md
+│   │   ├── pricing-models.md          adapted from phuryn/pm-skills (MIT)
 │   │   ├── persona-edge-matrix.md     (planned)
 │   │   ├── stack-archetypes.md        (planned)
 │   │   ├── interview-examples.md      (planned)

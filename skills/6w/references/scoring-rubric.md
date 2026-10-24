@@ -1,6 +1,6 @@
 # Scoring rubric
 
-Rubric version 0.1. This file defines how a W earns its score. The agent reads it before rating anything and shows its arithmetic until the scoring script ships.
+Rubric version 0.2. This file defines how a W earns its score. The agent reads it before rating anything and shows its arithmetic until the scoring script ships.
 
 ## Formula
 
@@ -33,7 +33,7 @@ Rate against the selected target stage. A 4 at the explore stage is a clear hypo
 | --- | --- | ---: | --- | --- |
 | 1 | Pain severity | 30 | "It is annoying" with no frequency or cost | How often it happens, what it costs in time or money, what breaks when it is ignored |
 | 2 | Broken workaround | 25 | A competitor is named but not why people still use the workaround | The current manual process or tool, why it fails, and why the pain has not been solved already |
-| 3 | Value capture | 25 | "Subscription" with no price logic or cost side | A revenue or value model with a price hypothesis, a cost assumption, and the support burden, or for internal tools the measurable organizational benefit |
+| 3 | Value capture | 25 | "Subscription" with no price logic or cost side | A revenue or value model that names the unit the price scales with (the value metric), a price hypothesis with its cost side and support burden, and one experiment that could falsify it. For internal tools, the measurable organizational benefit instead. See `pricing-models.md`. |
 | 4 | Success metric | 20 | "Users will love it" | One measurable outcome for v1 and the evidence that would weaken the proposition |
 
 Cap 60: the user cannot say how people work around the problem today.
@@ -105,6 +105,11 @@ The same rating scale is read against the target stage.
 | Pilot | Onboarding, operating responsibilities, measurement, recovery behavior, and unresolved approvals identified |
 
 A 4 at prototype never implies production readiness.
+
+## Versions
+
+- 0.2 (2026-10-24). The Why value-capture anchor for a 4 names the value metric and a falsifying experiment, and points at `pricing-models.md`. Weights, caps and the formula are unchanged. Evaluation: both example states were re-rated under 0.2. No rating changed. MenuLens complete keeps value capture at 3 because its trip pass names the unit but has no experiment yet that could falsify the price (EXP-001 tests sign-ups, not payment).
+- 0.1 (2026-10-23). Initial rubric.
 
 ## Change rules
 

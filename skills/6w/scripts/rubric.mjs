@@ -1,7 +1,7 @@
-// Rubric 0.1. Weights, sub-criteria and caps per W. Mirrors references/scoring-rubric.md.
+// Rubric 0.2. Weights, sub-criteria and caps per W. Mirrors references/scoring-rubric.md.
 // Ratings and cap activation are judgments recorded in state; this file only holds the numbers.
 
-export const RUBRIC_VERSION = "0.1";
+export const RUBRIC_VERSION = "0.2";
 export const DEFAULT_GATE = 90;
 
 export const WS = [

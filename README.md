@@ -39,7 +39,7 @@ overall 61/100  [############........]
   WHEN      30    ..      unknown      Two weeks, not mapped to scope
 ```
 
-Each W has four named sub-criteria. Hard caps stop a vague idea from scoring 95. The score and the evidence are separate fields, so "the user agreed" cannot turn into "this is proven".
+Each W has four named sub-criteria. Hard caps stop a vague idea from scoring 95. For a commercial project in deep mode, a weak value-capture rating pulls in a pricing reference that makes the agent choose the unit the price scales with before it names a price. The score and the evidence are separate fields, so "the user agreed" cannot turn into "this is proven".
 
 ## Demo
 
@@ -99,6 +99,7 @@ Or, where the host supports commands, `/6w`, `/6w quick`, `/6w deep`, `/6w roast
 | `BLUEPRINT.md` | The master specification: framework, conversation design, rubric, outputs, system design, repository layout, acceptance criteria and open decisions |
 | `skills/6w/SKILL.md` | The portable skill every host loads |
 | `skills/6w/references/scoring-rubric.md` | Sub-criteria, anchors, caps and the formula |
+| `skills/6w/references/pricing-models.md` | Value metric, pricing model and experiments for commercial projects, read on demand |
 | `skills/6w/scripts/` | `score.mjs` scores and prints the scoreboard, `validate.mjs` checks a state file, `state.mjs` saves, checkpoints and migrates, `diagrams.mjs` handles archify and the SVG fallback, `render.mjs` and `handoff.mjs` produce the HTML and Markdown, `export.mjs` writes the whole bundle atomically. Tests next to them. |
 | `skills/6w/templates/` | `blueprint.css`, inlined into every rendered page |
 | `docs/demo/` | The exported MenuLens blueprint and handoff, served by GitHub Pages, rebuilt with `node scripts/build-demo.mjs` |

@@ -11,7 +11,7 @@ metadata:
 
 Guide the user through six decisions before implementation, score each one honestly, and export two things from one state: `6w-blueprint.html` for people and `.6w/handoff/` for the coding agent.
 
-Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula.
+Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula. `references/pricing-models.md` is read on demand for commercial projects, as described under Phase 1.
 
 ## When to use
 
@@ -63,6 +63,8 @@ Each turn:
 5. Record the user's answer as theirs. Record your recommendation as yours.
 6. Re-rate, update linked records and freshness markers, then run `score.mjs --write` to save the scores. Before any export, run `state.mjs checkpoint .6w/state.json` so the last valid state is kept under `.6w/checkpoints/`.
 7. When a W reaches the gate, mark it `OK` and move to the next W below the gate.
+
+Pricing. When the project is commercial, the session is in deep mode or the user asks about pricing, and Why's value-capture rating is below 3, read `references/pricing-models.md` before asking the next Why question. Choose the value metric first, then the model, and record the result as a proposed `DEC-`, `ASM-` records for each price point, `EXP-` records for the tests, and `SRC-` records with dates for any competitor price. Skip this for internal tools and community projects unless the user asks.
 
 When the user says skip, next, move on or good enough, mark the W `LOCKED`, add every unresolved sub-criterion to the assumption register, and advance. Never raise a score to end a conversation.
 
@@ -153,6 +155,6 @@ IDs: `PERSONA-`, `EDGE-`, `DEC-`, `REQ-`, `RISK-`, `ASM-`, `EXP-`, `SRC-`, `TASK
 - Do not put a CDN, a web font or a network fetch in the HTML. The file must open on a plane.
 - Do not tell a coding agent to read the HTML. The Markdown handoff is for agents.
 - Do not pad a persona list to four. Produce what the context supports plus the anti-persona.
-- Do not force revenue projections on an internal tool or a community project.
+- Do not force revenue projections or a pricing model on an internal tool or a community project.
 - Do not inflate a score. The caps exist because polite agents round up.
 - Do not overwrite a root rules file. Offer a pointer block and wait for yes.

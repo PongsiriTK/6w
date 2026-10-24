@@ -4,6 +4,11 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+### Added
+
+- `skills/6w/references/pricing-models.md`, adapted from the MIT-licensed `pricing-strategy` skill in phuryn/pm-skills and credited in `THIRD_PARTY_NOTICES.md`. The skill reads it for commercial projects when value capture is weak: choose the value metric first, then the model, record the result as a proposed decision, assumptions, experiments and dated sources.
+- Rubric 0.2: the Why value-capture anchor for a 4 names the value metric and a falsifying experiment. Weights, caps and formula unchanged. Both examples re-rated, no rating changed.
+
 ### Fixed
 
 - The SVG sanitizer was a blocklist and could be bypassed (handlers after a slash, entity-encoded `javascript:`, CSS `@import`, nested `<svg>`, `<img>` breakout, SMIL). It is now an allowlist tokenizer that rejects any element, attribute, entity or non-fragment reference it does not recognize, and never strips. The HTML page also carries a Content Security Policy that allows only the inline search script and no network source.
