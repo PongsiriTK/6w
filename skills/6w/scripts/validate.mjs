@@ -168,9 +168,9 @@ export function validateExportManifest(manifest) {
 
 function main(argv) {
 	const [file] = argv;
-	if (!file) {
-		console.error("usage: node validate.mjs <state.json>");
-		process.exit(2);
+	if (!file || file === "--help" || file === "-h") {
+		console.error("usage: node validate.mjs <state.json> [--json]\n  Check a state file against the schema, the rubric, linked IDs and stored scores.\n  --json   print {ok, problems, records} as JSON instead of text");
+		process.exit(file ? 0 : 2);
 	}
 	let state;
 	try {
@@ -180,12 +180,16 @@ function main(argv) {
 		process.exit(1);
 	}
 	const errors = validateState(state);
+	const n = Object.values(state.records ?? {}).reduce((a, l) => a + (l?.length ?? 0), 0);
+	if (argv.includes("--json")) {
+		console.log(JSON.stringify({ ok: errors.length === 0, problems: errors, records: n }, null, 2));
+		process.exit(errors.length ? 1 : 0);
+	}
 	if (errors.length) {
 		console.error(`${file}: ${errors.length} problem(s)`);
 		for (const e of errors) console.error(`  - ${e}`);
 		process.exit(1);
 	}
-	const n = Object.values(state.records ?? {}).reduce((a, l) => a + (l?.length ?? 0), 0);
 	console.log(`${file}: ok (${n} records, scores consistent)`);
 }
 

@@ -254,9 +254,9 @@ export function loadDiagrams(state, { dir } = {}) {
 
 function main(argv) {
 	const [cmd, file, dir] = argv;
-	if (!cmd || !file || !dir) {
-		console.error("usage: node diagrams.mjs spec|render <state.json> <dir>");
-		process.exit(2);
+	if (cmd === "--help" || cmd === "-h" || !cmd || !file || !dir) {
+		console.error("usage: node diagrams.mjs spec|render <state.json> <dir>\n  spec    write <dir>/<type>.spec.json for archify and say whether archify is installed\n  render  write the fallback <dir>/<type>.svg");
+		process.exit(cmd === "--help" || cmd === "-h" ? 0 : 2);
 	}
 	const state = JSON.parse(readFileSync(file, "utf8"));
 	if (cmd === "spec") {

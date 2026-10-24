@@ -76,7 +76,7 @@ function table(rows, cols) {
 	return `<div class="table-wrap"><table><thead><tr>${cols.map(([h]) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${cols.map(([, f]) => `<td>${f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 
-export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.1.0", diagrams = {}, hash = stateHash(state) } = {}) {
+export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.1.1", diagrams = {}, hash = stateHash(state) } = {}) {
 	const computed = computeScores(state);
 	const R = state.records ?? {};
 	const stage = stageLabel[state.session.stage] ?? state.session.stage;
@@ -201,9 +201,9 @@ ${kv([["Project", esc(state.metadata.projectId)], ["Schema version", esc(state.s
 
 function main(argv) {
 	const [file, out, ...flags] = argv;
-	if (!file || !out) {
-		console.error("usage: node render.mjs <state.json> <out.html> [--generated-at <iso>]");
-		process.exit(2);
+	if (!file || file === "--help" || file === "-h" || !out) {
+		console.error("usage: node render.mjs <state.json> <out.html> [--generated-at <iso>]\n  Render 6w-blueprint.html from one validated state. Prefer export.mjs for the full bundle.");
+		process.exit(file === "--help" || file === "-h" ? 0 : 2);
 	}
 	const gi = flags.indexOf("--generated-at");
 	const generatedAt = gi >= 0 ? flags[gi + 1] : new Date().toISOString();

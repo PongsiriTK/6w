@@ -4,6 +4,20 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-24
+
+### Added
+
+- Four references adapted from alirezarezvani/claude-skills (MIT, credited in `THIRD_PARTY_NOTICES.md`): `evidence-from-interviews.md` (two checks before a claim becomes source: the quote exists and the quote supports the claim), `experiment-design.md` (hypothesis shape, one primary metric, stopping rule set in advance, test high-risk low-certainty assumptions first), `positioning-and-launch.md` (six-step positioning, owned, rented and borrowed channels, a phased launch), `legal-privacy-checklist.md` (forcing questions recorded as risks and tasks with owners, never as a compliance claim).
+- The skill gained three sections in the shape of that repository's authoring standard: proactive triggers (the cap conditions and blockers to raise unasked), an output-artifacts table, and related skills with disambiguation. Phase 0 now reads a README, docs folder, brief or PRD already in the workspace as sources.
+- `evals/`: three `claude plugin eval` cases (fires on an idea, stays quiet on a coding question, finishes early honestly) with LLM graders and a README on how to read the results.
+- Every CLI answers `--help`; `validate.mjs` has `--json`; `cli.test.mjs` smokes both.
+- `score.mjs -` scores a state piped on stdin and writes nothing. The skill uses it when the user asked for no files. In an eval transcript the agent had scored by hand under that constraint and printed a wrong Whether score, which it then corrected in its own prose.
+
+### Changed
+
+- The skill now forbids describing a competitor, an existing tool or a user habit from memory, hedged or not; alternatives become an open question until a dated source exists. The first turn is capped at the scoreboard, three observations and two questions. Evidence words are exactly the five statuses. These came from reading the eval transcripts: the skill named three recipe apps and their features from memory on a one-line brief. A later transcript asked a third question after its two numbered ones, so the two-question rule now says two requests in total.
+
 ## [0.1.0] - 2026-10-24
 
 First release. A new user can install the plugin on Claude Code, bring an idea, get a scoreboard from a plain-language prompt, complete or stop a session, reopen it, and receive the offline HTML blueprint plus the Markdown handoff.

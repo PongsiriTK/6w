@@ -3,6 +3,7 @@
 //   node score.mjs <state.json>            print the scoreboard
 //   node score.mjs <state.json> --write    validate, then write ws[w].score and overall back atomically
 //   node score.mjs <state.json> --json     print the computed scores as JSON
+//   node score.mjs - < draft.json          score a state piped on stdin; writes nothing
 // Writing is idempotent: a second run produces identical bytes.
 
 import { readFileSync, writeFileSync, renameSync } from "node:fs";
@@ -13,15 +14,20 @@ export * from "./scoring.mjs";
 
 function main(argv) {
 	const [file, ...flags] = argv;
-	if (!file) {
-		console.error("usage: node score.mjs <state.json> [--write] [--json]");
+	if (!file || file === "--help" || file === "-h") {
+		console.error("usage: node score.mjs <state.json|-> [--write] [--json]\n  Compute each W score from its ratings and active caps and print the scoreboard.\n  -        read the state from stdin and write nothing, for sessions that must not create files\n  --write  validate, then write ws[w].score and overall back atomically\n  --json   print the computed scores as JSON");
+		process.exit(file ? 0 : 2);
+	}
+	const fromStdin = file === "-";
+	if (fromStdin && flags.includes("--write")) {
+		console.error("score.mjs: --write needs a file; stdin input is scored and printed only");
 		process.exit(2);
 	}
 	let state;
 	try {
-		state = JSON.parse(readFileSync(file, "utf8"));
+		state = JSON.parse(readFileSync(fromStdin ? 0 : file, "utf8"));
 	} catch (err) {
-		console.error(`${file}: ${err.code === "ENOENT" ? "file not found" : `not valid JSON (${err.message})`}`);
+		console.error(`${fromStdin ? "stdin" : file}: ${err.code === "ENOENT" ? "file not found" : `not valid JSON (${err.message})`}`);
 		process.exit(1);
 	}
 	if (flags.includes("--write")) {

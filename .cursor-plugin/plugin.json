@@ -1,7 +1,7 @@
 {
   "name": "6w",
   "displayName": "6W",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Product foundation for agent-assisted builders. Runs the 6W discovery loop (Why, Who, What, Which, Whether, When) before code and exports one offline HTML blueprint plus an agent-ready Markdown handoff.",
   "author": {
     "name": "Pongsiri Tonsuk"

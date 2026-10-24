@@ -15,7 +15,7 @@ import { renderHtml, stateHash } from "./render.mjs";
 import { renderHandoff, HANDOFF_FILES } from "./handoff.mjs";
 import { loadDiagrams } from "./diagrams.mjs";
 
-export const BLUEPRINT_VERSION = "0.1.0";
+export const BLUEPRINT_VERSION = "0.1.1";
 export const HTML_NAME = "6w-blueprint.html";
 export const HANDOFF_DIR = posix.join(".6w", "handoff");
 export const MANIFEST_NAME = "export-manifest.json";
@@ -135,9 +135,9 @@ export function bundleIsConsistent(projectRoot) {
 
 function main(argv) {
 	const [file, root, ...flags] = argv;
-	if (!file || !root) {
-		console.error("usage: node export.mjs <state.json> <project-root> [--generated-at <iso>] [--diagrams-dir <dir>]");
-		process.exit(2);
+	if (!file || file === "--help" || file === "-h" || !root) {
+		console.error("usage: node export.mjs <state.json> <project-root> [--generated-at <iso>] [--diagrams-dir <dir>]\n  Export 6w-blueprint.html and .6w/handoff/ from one validated state, atomically.\n  --diagrams-dir  folder holding archify output as <type>.html or <type>.svg");
+		process.exit(file === "--help" || file === "-h" ? 0 : 2);
 	}
 	const flag = (k) => (flags.indexOf(k) >= 0 ? flags[flags.indexOf(k) + 1] : undefined);
 	let state;

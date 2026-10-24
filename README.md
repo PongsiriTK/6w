@@ -101,6 +101,8 @@ Or, where the host supports commands, `/6w`, `/6w quick`, `/6w deep`, `/6w roast
 | `skills/6w/references/scoring-rubric.md` | Sub-criteria, anchors, caps and the formula |
 | `skills/6w/references/pricing-models.md` | Value metric, pricing model and experiments for commercial projects, read on demand |
 | `skills/6w/references/persona-edge-matrix.md`, `interview-examples.md`, `stack-archetypes.md` | Persona and edge-case rules, a strong question per sub-criterion, and stack patterns with the unit-economics table |
+| `skills/6w/references/evidence-from-interviews.md`, `experiment-design.md`, `positioning-and-launch.md`, `legal-privacy-checklist.md` | How documents and interviews become evidence, how an experiment record is written, positioning and a phased launch, and legal issues as tasks with owners. Adapted from alirezarezvani/claude-skills under MIT. |
+| `evals/` | Three `claude plugin eval` cases: the skill fires on an idea, stays quiet on a coding question, and finishes early honestly |
 | `tests/fixtures/` | Six behavioral cases with input, review notes, expected state and invariants |
 | `skills/6w/scripts/` | `score.mjs` scores and prints the scoreboard, `validate.mjs` checks a state file, `state.mjs` saves, checkpoints and migrates, `diagrams.mjs` handles archify and the SVG fallback, `render.mjs` and `handoff.mjs` produce the HTML and Markdown, `export.mjs` writes the whole bundle atomically. Tests next to them. |
 | `skills/6w/templates/` | `blueprint.css`, inlined into every rendered page |

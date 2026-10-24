@@ -3,7 +3,7 @@ name: 6w
 description: Product discovery before code. Use when the user wants to brainstorm, validate, scope or position a new app, product, side project or internal tool; asks for personas, edge cases, MVP scope, a tech stack or a roadmap before building; says "I want to build X"; or asks for 6W, a product blueprint, or a plan a coding agent can execute. Runs the 6W loop (Why, Who, What, Which, Whether, When), scores readiness without inflating it, and exports one offline HTML blueprint plus a Markdown handoff.
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
   author: PongsiriTK
 ---
 
@@ -11,7 +11,7 @@ metadata:
 
 Guide the user through six decisions before implementation, score each one honestly, and export two things from one state: `6w-blueprint.html` for people and `.6w/handoff/` for the coding agent.
 
-Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula. The other references are read on demand: `interview-examples.md` when you form a question, `persona-edge-matrix.md` before any persona or edge-case card, `pricing-models.md` for commercial projects when value capture is weak, `stack-archetypes.md` before recording a technical direction.
+Read `references/scoring-rubric.md` before rating anything. It holds the sub-criteria, anchors, caps and the formula. The other references are read on demand: `interview-examples.md` when you form a question, `persona-edge-matrix.md` before any persona or edge-case card, `evidence-from-interviews.md` when the user brings interviews, documents or tickets, `experiment-design.md` before writing an `EXP-`, `pricing-models.md` for commercial projects when value capture is weak, `positioning-and-launch.md` for the marketing section or when distribution is weak, `legal-privacy-checklist.md` when rating legal, privacy and security, `stack-archetypes.md` before recording a technical direction.
 
 ## When to use
 
@@ -43,10 +43,11 @@ Natural language always works. Where the host supports commands, accept these:
 
 1. Check host capabilities: file read and write, script execution, browsing, attachment extraction, archify.
 2. If `.6w/state.json` exists in the workspace, run `node <skill-dir>/scripts/state.mjs show .6w/state.json` to validate it and see the scoreboard, then go to the phase it records. If it fails validation because of fields this version does not know, run `state.mjs migrate .6w/state.json --write` first.
-3. Otherwise read everything the user supplied. Record extraction coverage per source as fully read, partially read, unreadable or omitted. A filename is not content.
+3. Otherwise read everything the user supplied, and look for context already in the workspace: a README, a docs folder, a brief, a PRD or a product-context file. Each becomes a `SRC-` record. Record extraction coverage per source as fully read, partially read, unreadable or omitted. A filename is not content. For interviews, transcripts, decks and tickets, follow `references/evidence-from-interviews.md` before any rating rises to `source`.
 4. Draft all six Ws from what you read. Label every statement with its origin: user, attachment, repository, external source or inference.
 5. Rate every sub-criterion 0 to 4 with the rubric. Record each rating with its rationale, evidence status and sources, and mark any cap whose condition holds as active. The shape is `schemas/state.schema.json`.
 6. Write `.6w/state.json`. Run `node <skill-dir>/scripts/score.mjs .6w/state.json --write` to compute the scores and print the scoreboard. Select the first W in sequence below the gate.
+7. Keep the first turn short: the scoreboard, at most three observations about what is strongest and what blocks, then one or two questions. Everything else waits for its W. Two questions means two requests for information in total. Do not add a third ask after them ("also tell me which app you use"); fold it into one of the two as an option, or save it for its W.
 
 Confirm only the setup fields that change the outcome: working title, maturity (idea, prototype, product), target stage (explore, prototype, build MVP, pilot), depth. Never ask all of them up front.
 
@@ -119,11 +120,11 @@ Status: `OK` at or above the gate. `..` in progress. `CAP` a cap is active. `LOC
 
 ## Scoring in one paragraph
 
-Each W has four sub-criteria weighted 30, 25, 25 and 20. Rate each 0 to 4. The raw score is the sum of weight × rating / 4, rounded half up, then limited by any active cap. The overall number is the mean of six scores and is only a summary. You record the ratings and the active caps. `scripts/score.mjs` does the arithmetic, so never write a score by hand. Full anchors and cap conditions are in `references/scoring-rubric.md`. If the host cannot run Node, show the arithmetic in your reply instead and say that the score is unverified.
+Each W has four sub-criteria weighted 30, 25, 25 and 20. Rate each 0 to 4. The raw score is the sum of weight × rating / 4, rounded half up, then limited by any active cap. The overall number is the mean of six scores and is only a summary. You record the ratings and the active caps. `scripts/score.mjs` does the arithmetic, so never write a score by hand. When the user has asked you not to write files, or no state file exists yet, pipe the draft state on stdin: `node <skill-dir>/scripts/score.mjs - <<'EOF'` followed by the JSON and `EOF`. It prints the scoreboard and writes nothing. Full anchors and cap conditions are in `references/scoring-rubric.md`. Only if the host cannot run commands at all, show the arithmetic in your reply and say that the score is unverified.
 
 ## Evidence rules
 
-Decision status and evidence status are separate axes. Acceptance by the user is a decision, not proof. Never invent interviews, market sizes, quotes, conversion rates, prices or competitor capabilities. When you cannot browse, list what needs verification. Keep conflicting sources visible until resolved. Frame legal concerns as issues to investigate with jurisdiction, never as assurances.
+Decision status and evidence status are separate axes. Acceptance by the user is a decision, not proof. Never invent interviews, market sizes, quotes, conversion rates, prices or competitor capabilities. Naming a competitor or an existing tool from memory is also invention: you may say that alternatives exist and must be checked, as an open question or an `ASM-`, but you may not say what any of them does, costs or lacks until a dated `SRC-` says so. Hedging ("I have not checked") does not make a capability claim acceptable. The evidence words are exactly unknown, assumption, user, source, observed; "inference" and "implied" are not values, use assumption. When you cannot browse, list what needs verification. Keep conflicting sources visible until resolved. Frame legal concerns as issues to investigate with jurisdiction, never as assurances.
 
 ## Personas and edge cases
 
@@ -151,6 +152,42 @@ IDs: `PERSONA-`, `EDGE-`, `DEC-`, `REQ-`, `RISK-`, `ASM-`, `EXP-`, `SRC-`, `TASK
 | Script runtime | Continue discovery, do not claim validated export |
 | archify | The exporter draws plain inline SVG |
 | Commands | Natural language |
+
+## Proactive triggers
+
+Say these without being asked, the moment the context shows them. Each is a cap condition or a blocker, and the user is better served by hearing it on the turn it appears than at export.
+
+- A paid model or API call with no cost per active user. Whether cap. Estimate it with the user now.
+- An audience described as everyone, consumers, or small businesses with no role. Who cap.
+- More than five features, or no list of what is cut. What cap.
+- A native app store download with no hardware, notification or habit reason. Which cap.
+- A date and a bandwidth that do not fit the scope. When cap, with the arithmetic.
+- A workaround nobody can name. Why cap.
+- Personal, health, financial or minors' data, or advice people will act on. Open `references/legal-privacy-checklist.md` and record the issues.
+- A claim from a deck, a survey or a single interview presented as proof. Keep it at assumption and say why.
+- A competitor, an existing tool or a user habit that you are about to describe from memory. Turn it into an open question to check, and say nothing about what it does.
+- A changed decision. Run revision propagation; never edit the old record in place.
+
+## Output artifacts
+
+| When the user asks for | They get |
+| --- | --- |
+| The scoreboard, where we are, how ready | The scoreboard block, the focus W and the next one or two questions |
+| Personas, who is this for | Persona cards per `persona-edge-matrix.md`, with evidence status and the anti-persona |
+| Edge cases, what breaks | Edge-case records with severity, response, scope decision and a test each |
+| Pricing, business model | A proposed `DEC-` with value metric and model, `ASM-` per price, `EXP-` per test, per `pricing-models.md` |
+| How to test this, an experiment | An `EXP-` with hypothesis, one primary metric, timebox and decision rule, per `experiment-design.md` |
+| Positioning, how to describe it, launch | The positioning statement, message angles with proof, owned, rented and borrowed channels, a phased launch, per `positioning-and-launch.md` |
+| Tech stack, architecture | A proposed `DEC-` with the fast stack, the scale alternative and the switch trigger, per `stack-archetypes.md` |
+| Legal, privacy, compliance | `RISK-` and `TASK-` records with owners and dates, never a statement of compliance |
+| The blueprint, the export, the handoff | `6w-blueprint.html` and `.6w/handoff/` from `export.mjs`, with the handoff summary and a first coding prompt |
+
+## Related skills
+
+- archify. Use it for the diagrams when it is installed and the user wants more than the built-in SVG. Not for scoring or discovery.
+- humanizer. Run it on the prose of `6w-blueprint.html` and the handoff when the user wants the text to read less like a model. Not for changing any decision or number.
+- A brainstorming or planning skill in the host (for example superpowers brainstorming). Use it for how to build what 6W decided. 6W decides what and whether; it does not design the implementation.
+- A pricing skill such as pm-skills pricing-strategy. 6W's `pricing-models.md` adapts it; use the original when the user wants a full pricing deck rather than a hypothesis to test.
 
 ## Gotchas
 

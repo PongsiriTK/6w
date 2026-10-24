@@ -144,6 +144,10 @@ function main(argv) {
 		console.error("usage: node state.mjs show|checkpoint|migrate <state.json> [--write]");
 		process.exit(2);
 	};
+	if (cmd === "--help" || cmd === "-h") {
+		console.error("usage: node state.mjs show|checkpoint|migrate <state.json> [--write]\n  show        validate and print the scoreboard\n  checkpoint  copy the file to checkpoints/, keep the last 10\n  migrate     move unknown fields into extensions; --write saves");
+		process.exit(0);
+	}
 	if (!cmd || !file) usage();
 	try {
 		if (cmd === "show") {

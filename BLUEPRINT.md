@@ -1,6 +1,6 @@
 # 6W master blueprint
 
-Version 0.1.0. 24 October 2026. Status: first release. Specification, skill, state schema, scripts for scoring, validation, state, diagrams and the full export, five references, six behavioral fixtures, and a worked demo published from them. Claude Code is the one host with a recorded install and activation; see `docs/compatibility.md`. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
+Version 0.1.1. 24 October 2026. Status: first release plus the claude-skills adaptations. Specification, skill, state schema, scripts for scoring, validation, state, diagrams and the full export, five references, six behavioral fixtures, and a worked demo published from them. Claude Code is the one host with a recorded install and activation; see `docs/compatibility.md`. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
 
 Tagline: give your idea a foundation before you build.
 
@@ -532,6 +532,10 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │   │   ├── pricing-models.md          adapted from phuryn/pm-skills (MIT)
 │   │   ├── persona-edge-matrix.md
 │   │   ├── interview-examples.md
+│   │   ├── evidence-from-interviews.md  adapted from claude-skills (MIT)
+│   │   ├── experiment-design.md         adapted from claude-skills (MIT)
+│   │   ├── positioning-and-launch.md    adapted from claude-skills (MIT)
+│   │   ├── legal-privacy-checklist.md   adapted from claude-skills (MIT)
 │   │   └── stack-archetypes.md
 │   ├── schemas/                 state.schema.json, export-manifest.schema.json
 │   ├── templates/blueprint.css  inlined into every rendered page
@@ -546,6 +550,7 @@ The layout below is the target for v0.1. Items marked "planned" do not exist yet
 │       ├── handoff.mjs          the ten Markdown handoff files
 │       ├── export.mjs           CLI: the whole bundle plus export-manifest.json, atomic
 │       └── *.test.mjs           node --test suites next to the code (pstack)
+├── evals/                       claude plugin eval cases: prompt.md plus graders/*.md per case
 ├── examples/                    menulens-partial, menulens-complete, README.md
 └── tests/
     ├── fixtures/<case>/         input.md, notes.md, state.json, expected.json, plus build-fixtures.mjs
