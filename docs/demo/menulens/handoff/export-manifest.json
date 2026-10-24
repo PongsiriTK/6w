@@ -1,64 +1,64 @@
 {
   "schemaVersion": "0.1",
   "projectId": "menulens",
-  "blueprintVersion": "0.0.4",
+  "blueprintVersion": "0.1.0",
   "rubricVersion": "0.2",
   "stateHash": "sha256:56da7ccf225e6a14c2b2305b25a6b97fb86fbf9c6d77f68e020f17645488b440",
   "generatedAt": "2026-10-23T16:00:00+07:00",
   "files": [
     {
       "path": "6w-blueprint.html",
-      "sha256": "5f532f7fe946a8fad4bcc28d26a13f4785128c4ebff6c67a3aa25ffbade70caa",
+      "sha256": "208832eb232a23354877627dec1f7f4a063f075670a3b5acdd8f4e359ef67879",
       "kind": "html"
     },
     {
       "path": ".6w/handoff/START-HERE.md",
-      "sha256": "2c1cf028ecad98edead9434ab7c206b4ff7790a38834610ac8ea1f2ceb0187f5",
+      "sha256": "68634214dd8e74062e3c1e62df43e0c6618828743109af3536f83e9aac74cad8",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/PRODUCT.md",
-      "sha256": "d42faf9f1e82d70538a72eecaf8f9bf21809ae305258201715b0fd753766c99d",
+      "sha256": "026e6cb55c2cffbd0fa4f09c3cee9b4512f6d6069f1e24e0ab6d804cf43e9d59",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/AUDIENCE.md",
-      "sha256": "9717a513c4b79940a4d35526e016e5b52b634c80e420e68a5e145fde5055d8d4",
+      "sha256": "19de07c7dec7d4a54f8c6e51172247566db29e0d3f948de13457426aafe0160a",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/MARKETING.md",
-      "sha256": "23585d50643679353c94a552db581a247b18eb6a0fc1a4655d237cabba828021",
+      "sha256": "7fda5168a9461bd858990704b1016603130e1b02fc8729ef82ac7b3ef0d48484",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/REQUIREMENTS.md",
-      "sha256": "4629f99eeb1abe99050f836be2c6d8f06239d41e48ac6d0c7bf9b31f3b80b5d4",
+      "sha256": "05487923ecdf5f491f8053609685100f259ecf2be28be0f72f693ffc481e4c55",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/ARCHITECTURE.md",
-      "sha256": "95b36b9fec352ad7b4148627d638b4f815c9a59a9e7b8febf21f3a0eef0d6e9a",
+      "sha256": "07c58a720b8409214dc00dac5b9d489d5471b6acb28ecb521fcd60316ed42fb0",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/DELIVERY.md",
-      "sha256": "06972a8c957ee1e80d3937afb1d7252ec07c1b0ea351e0d08d74d3e0d44d79ae",
+      "sha256": "d8e56cf27c88f54858bc9b9bc7813b099e42b0628015259fac4f33421c9772d7",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/RISKS-AND-ASSUMPTIONS.md",
-      "sha256": "8620b4248764d7265ec22faa1b0dc7882285cd31f821b5b4776cbf0938b42251",
+      "sha256": "ca057f62dabd40775c370e942fc16b2c17501b96dc4d0f07a28395b2cb57a6c5",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/DECISIONS.md",
-      "sha256": "db91e53976551bc20c55075ed806c114f2024b793c5c4e321527310131b924b1",
+      "sha256": "0e898404d03ae7552f80856dbd40dbfe0d480258bf444382a9c2eac81aa4a770",
       "kind": "markdown"
     },
     {
       "path": ".6w/handoff/AGENT-RULES.md",
-      "sha256": "7be157093c29739d135d7b3e39ca2b2088f34b9a729afdb9513eb2a6efed4ce0",
+      "sha256": "1051736f8fc7c83e2f9dff612698b4c083e8c41ca2e0f6f7aacebc43c04ed5f3",
       "kind": "markdown"
     }
   ],

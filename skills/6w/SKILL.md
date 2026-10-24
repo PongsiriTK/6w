@@ -3,7 +3,7 @@ name: 6w
 description: Product discovery before code. Use when the user wants to brainstorm, validate, scope or position a new app, product, side project or internal tool; asks for personas, edge cases, MVP scope, a tech stack or a roadmap before building; says "I want to build X"; or asks for 6W, a product blueprint, or a plan a coding agent can execute. Runs the 6W loop (Why, Who, What, Which, Whether, When), scores readiness without inflating it, and exports one offline HTML blueprint plus a Markdown handoff.
 license: MIT
 metadata:
-  version: "0.0.4"
+  version: "0.1.0"
   author: PongsiriTK
 ---
 

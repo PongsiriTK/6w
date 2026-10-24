@@ -1,12 +1,12 @@
 # MenuLens: marketing
 
-<!-- 6W handoff. project menulens. blueprint 0.0.4. state sha256:56da7ccf225e6a14c2b2305b25a6b97fb86fbf9c6d77f68e020f17645488b440. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.2. -->
+<!-- 6W handoff. project menulens. blueprint 0.1.0. state sha256:56da7ccf225e6a14c2b2305b25a6b97fb86fbf9c6d77f68e020f17645488b440. generated 2026-10-23T16:00:00+07:00. schema 0.1. rubric 0.2. -->
 
 Positioning, message hypotheses, objections, channels and experiments. Hypotheses to test, not claims. Hypothetical copy is never a customer quote.
 
 | Project | Blueprint | State hash | Generated | Schema | Rubric |
 | --- | --- | --- | --- | --- | --- |
-| `menulens` | 0.0.4 | `sha256:56da7ccf225e6a14c2b2305b25a6b97fb86fbf9c6d77f68e020f17645488b440` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.2 |
+| `menulens` | 0.1.0 | `sha256:56da7ccf225e6a14c2b2305b25a6b97fb86fbf9c6d77f68e020f17645488b440` | 2026-10-23T16:00:00+07:00 | 0.1 | 0.2 |
 
 ## Positioning hypothesis
 

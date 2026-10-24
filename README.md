@@ -11,7 +11,7 @@
 
 ## Status
 
-This repository holds the master blueprint, the skill, and the scripts that make it deterministic: scoring, validation, state save and resume, diagrams, and the export of the HTML blueprint plus the Markdown handoff. A worked demo is live as a page. The scripts and the export ran on Claude Code, and `docs/compatibility.md` records the result. Nobody has yet recorded a test of installing through a marketplace or of the skill activating on its own, on any host. The remaining plan is in `docs/plans/0001-v0.1-implementation.md`.
+Version 0.1.0, the first release. The skill, its scripts and the export are complete for one host: on Claude Code it installs from this repository's marketplace, activates from a plain-language prompt, scores deterministically, saves and resumes, and exports the HTML blueprint and the Markdown handoff. `docs/compatibility.md` has the record. Cursor has an install record only, and no other host has been tested. No pilot with real users has been run yet, so the rubric thresholds are still the proposed defaults.
 
 ## What it does
 
@@ -64,7 +64,7 @@ The session is synthetic, authored to exercise the rubric. `examples/README.md` 
 
 ## Install
 
-These commands follow each host's documented convention. None has a recorded test yet. See `docs/compatibility.md` and report what you find.
+Claude Code is the tested host. The others follow each host's documented convention and have no activation record yet. See `docs/compatibility.md` and report what you find.
 
 Claude Code:
 

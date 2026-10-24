@@ -1,6 +1,6 @@
 # 6W master blueprint
 
-Version 0.0.4. 24 October 2026. Status: specification, skill, state schema, and scripts for scoring, validation, state, diagrams and the full export, with a worked demo published from them. Marketplace install and activation are untested on every host. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
+Version 0.1.0. 24 October 2026. Status: first release. Specification, skill, state schema, scripts for scoring, validation, state, diagrams and the full export, five references, six behavioral fixtures, and a worked demo published from them. Claude Code is the one host with a recorded install and activation; see `docs/compatibility.md`. Requirements written as MUST are release requirements. Thresholds, runtimes and estimates are proposals to validate during implementation.
 
 Tagline: give your idea a foundation before you build.
 

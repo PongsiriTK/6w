@@ -1,6 +1,6 @@
 {
   "name": "6w-skill",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "private": true,
   "description": "6W product-foundation skill repository",
   "type": "module",

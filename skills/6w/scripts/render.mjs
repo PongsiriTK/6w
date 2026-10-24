@@ -73,10 +73,10 @@ function recordCard(rec, fields) {
 
 function table(rows, cols) {
 	if (!rows?.length) return "";
-	return `<table><thead><tr>${cols.map(([h]) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${cols.map(([, f]) => `<td>${f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+	return `<div class="table-wrap"><table><thead><tr>${cols.map(([h]) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${cols.map(([, f]) => `<td>${f(r)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 
-export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.0.4", diagrams = {}, hash = stateHash(state) } = {}) {
+export function renderHtml(state, { generatedAt = new Date().toISOString(), blueprintVersion = "0.1.0", diagrams = {}, hash = stateHash(state) } = {}) {
 	const computed = computeScores(state);
 	const R = state.records ?? {};
 	const stage = stageLabel[state.session.stage] ?? state.session.stage;

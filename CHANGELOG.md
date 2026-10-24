@@ -4,6 +4,25 @@ All notable changes to this repository are recorded here. The format follows Kee
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-24
+
+First release. A new user can install the plugin on Claude Code, bring an idea, get a scoreboard from a plain-language prompt, complete or stop a session, reopen it, and receive the offline HTML blueprint plus the Markdown handoff.
+
+### Added
+
+- `tests/acceptance.md` maps every acceptance criterion in the blueprint to a test or a dated manual record.
+- Compatibility: Claude Code 2.1.282 recorded as full for install, activation, discovery, scoring, save and resume, and export. Cursor recorded as install-only through the Skills CLI.
+- A visible focus style on every focusable element in the rendered page.
+
+### Fixed
+
+- Wide tables forced the rendered page wider than a phone screen. Tables now scroll inside their own container, the pitch flow stacks below 480 pixels, and the body cannot overflow horizontally.
+
+### Not in this release
+
+- Pilot sessions with real users, and the rubric tuning that follows them.
+- A recorded activation on any host other than Claude Code.
+
 ## [0.0.4] - 2026-10-24
 
 ### Added
